@@ -1,2 +1,1 @@
-# Single-File-HTML-Kits
-Self-Contained Single-File HTML Pages
+# Colección de páginas web ultra-ligeras y autocontenidas.
