@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabla Prospectar - WotLK 3.3.5a</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>const whTooltips = { colorLinks: false, iconizeLinks: false, renameLinks: false };</script>
+<script src="https://wow.zamimg.com/js/tooltips.js"></script>
+<style>
+body{font-family:'Inter',sans-serif;background-color:#0b0e14;color:#e2e8f0}.q-common{color:#fff}.q-uncommon{color:#1eff00}.q-rare{color:#0070dd}.q-epic{color:#a335ee}.border-q-common{border-color:rgba(255,255,255,.45)}.border-q-uncommon{border-color:rgba(30,255,0,.55)}.border-q-rare{border-color:rgba(0,112,221,.65)}.border-q-epic{border-color:rgba(163,53,238,.65)}::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:#11141c}::-webkit-scrollbar-thumb{background:#283042;border-radius:4px}::-webkit-scrollbar-thumb:hover{background:#3a455e}.sticky-col{position:sticky;left:0;z-index:10;background-color:#131822}thead .sticky-col{background-color:#171d29;z-index:20}tr:hover .sticky-col{background-color:#18202e}.ore-text-wrap{display:block}.ore-th-short{display:none}@media(max-width:639px){.is-scrolled-x .sticky-col{min-width:56px!important;width:56px!important;max-width:56px!important;padding-left:.625rem!important;padding-right:.625rem!important;box-shadow:6px 0 14px -4px rgba(0,0,0,.75)}.is-scrolled-x .ore-link{gap:0!important;justify-content:center}.is-scrolled-x .ore-text-wrap{display:none!important}.is-scrolled-x .ore-th-full{display:none!important}.is-scrolled-x .ore-th-short{display:block!important;text-align:center}}
+</style>
+</head>
+<body class="min-h-screen antialiased selection:bg-amber-500/30 selection:text-amber-200">
+<div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
+<header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 pb-5 border-b border-slate-800/80">
+<div class="flex items-center gap-3.5">
+<a href="https://www.wowhead.com/wotlk/spell=31252" target="_blank" rel="noopener noreferrer" class="relative shrink-0 w-11 h-11 rounded-lg overflow-hidden border border-amber-500/50 shadow-lg shadow-amber-950/20 hover:scale-105 transition-transform">
+<img src="https://wow.zamimg.com/images/wow/icons/medium/inv_misc_gem_bloodgem_01.jpg" alt="Prospecting" onerror="this.src='https://placehold.co/44x44/1e293b/f59e0b?text=JC'" class="w-full h-full object-cover">
+</a>
+<div>
+<div class="flex items-center gap-2.5 flex-wrap">
+<h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-100">Prospectar</h1>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/25">WoW 3.3.5a</span>
+</div>
+<p class="text-xs sm:text-sm text-slate-400 mt-0.5">Resultados oficiales por cada <span class="text-slate-200 font-medium">5 unidades de mena</span> · Base de datos Wowhead WotLK</p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+<div class="flex items-center justify-between sm:justify-start gap-3 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] font-medium">
+<span class="flex items-center gap-1.5 text-slate-300"><span class="w-2 h-2 rounded-full bg-[#ffffff]"></span>Común</span>
+<span class="flex items-center gap-1.5 text-[#1eff00]"><span class="w-2 h-2 rounded-full bg-[#1eff00]"></span>Poco común</span>
+<span class="flex items-center gap-1.5 text-[#0070dd]"><span class="w-2 h-2 rounded-full bg-[#0070dd]"></span>Raro</span>
+<span class="flex items-center gap-1.5 text-[#a335ee]"><span class="w-2 h-2 rounded-full bg-[#a335ee]"></span>Épico</span>
+</div>
+<div class="relative">
+<input type="text" id="searchInput" placeholder="Filtrar mena, gema, skill o %..." class="w-full sm:w-64 pl-9 pr-3 py-2 bg-slate-900/90 border border-slate-700/80 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500/60 focus:ring-1 focus:ring-amber-500/40 transition-colors">
+<svg class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+</div>
+</div>
+</header>
+<div id="tableWrapper" class="rounded-xl border border-[#1f2736] bg-[#131822] shadow-2xl shadow-black/50 overflow-hidden">
+<div id="tableScrollContainer" class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-[#171d29] border-b border-[#1f2736] text-xs uppercase tracking-wider text-slate-400 font-semibold">
+<th scope="col" class="sticky-col bg-[#171d29] py-3.5 px-3.5 sm:px-4 min-w-[185px] sm:min-w-[240px] border-r border-[#1f2736]"><span class="ore-th-full">Mena (5 uds.)</span><span class="ore-th-short">Mena</span></th>
+<th scope="col" class="py-3.5 px-3 text-center w-20">Skill</th>
+<th scope="col" class="py-3.5 px-4 min-w-[300px] sm:min-w-[330px] lg:min-w-[430px]">Gemas Comunes <span class="text-slate-500 font-normal normal-case">(Garantizadas 1–2)</span></th>
+<th scope="col" class="py-3.5 px-4 min-w-[300px] sm:min-w-[330px] lg:min-w-[430px]">Gemas Raras / Épicas <span class="text-slate-500 font-normal normal-case">(Tirada extra)</span></th>
+</tr>
+</thead>
+<tbody id="prospectingTableBody" class="divide-y divide-[#1f2736] text-sm"></tbody>
+</table>
+</div>
+<div id="emptyState" class="hidden py-12 px-4 text-center">
+<p class="text-slate-400 text-sm">No se encontraron menas, gemas o porcentajes que coincidan con tu búsqueda.</p>
+</div>
+</div>
+<footer class="mt-4 px-1 flex flex-col gap-2 text-xs text-slate-400">
+<p class="leading-relaxed"><strong class="text-slate-300 font-medium">Mecánica de prospección:</strong> Cada uso consume 5 menas y garantiza <span class="text-slate-300">1 o 2 gemas</span> de la columna <em>Comunes</em> (por ello la suma de sus porcentajes supera el 100%), más una tirada adicional independiente para <em>Raras / Épicas</em>.</p>
+<p class="text-slate-500">Fuentes: <a href="https://www.wow-professions.com/wotlk/prospecting-table-wotlk-classic" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-amber-400 underline transition-colors">WoW-Professions</a> &amp; <a href="https://www.wowhead.com/wotlk/es/spell=31252" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-amber-400 underline transition-colors">Wowhead WotLK 3.3.5a</a></p>
+</footer>
+</div>
+<script>
+const ITEMS={
+copper_ore:{id:2770,es:"Mena de cobre",en:"Copper Ore",icon:"inv_ore_copper_01",q:"common"},
+tin_ore:{id:2771,es:"Mena de estaño",en:"Tin Ore",icon:"inv_ore_tin_01",q:"common"},
+iron_ore:{id:2772,es:"Mena de hierro",en:"Iron Ore",icon:"inv_ore_iron_01",q:"common"},
+mithril_ore:{id:3858,es:"Mena de mitril",en:"Mithril Ore",icon:"inv_ore_mithril_02",q:"common"},
+thorium_ore:{id:10620,es:"Mena de torio",en:"Thorium Ore",icon:"inv_ore_thorium_02",q:"common"},
+fel_iron_ore:{id:23424,es:"Mena de hierro vil",en:"Fel Iron Ore",icon:"inv_ore_feliron",q:"common"},
+adamantite_ore:{id:23425,es:"Mena de adamantita",en:"Adamantite Ore",icon:"inv_ore_adamantium",q:"common"},
+cobalt_ore:{id:36909,es:"Mena de cobalto",en:"Cobalt Ore",icon:"inv_ore_cobalt",q:"common"},
+saronite_ore:{id:36912,es:"Mena de saronita",en:"Saronite Ore",icon:"inv_ore_saronite_01",q:"common"},
+titanium_ore:{id:36910,es:"Mena de titanio",en:"Titanium Ore",icon:"inv_ore_platinum_01",q:"uncommon"},
+adamantite_powder:{id:24243,es:"Polvo de adamantita",en:"Adamantite Powder",icon:"inv_misc_powder_adamantite",q:"common"},
+titanium_powder:{id:46849,es:"Polvo de titanio",en:"Titanium Powder",icon:"inv_misc_powder_thorium",q:"common"},
+malachite:{id:774,es:"Malaquita",en:"Malachite",icon:"inv_misc_gem_emerald_03",q:"uncommon"},
+tigerseye:{id:818,es:"Ojo de tigre",en:"Tigerseye",icon:"inv_misc_gem_opal_03",q:"uncommon"},
+moss_agate:{id:1206,es:"Ágata musgosa",en:"Moss Agate",icon:"inv_misc_gem_emerald_02",q:"uncommon"},
+shadowgem:{id:1210,es:"Gema de las Sombras",en:"Shadowgem",icon:"inv_misc_gem_amethyst_01",q:"uncommon"},
+jade:{id:1529,es:"Jade",en:"Jade",icon:"inv_misc_gem_stone_01",q:"uncommon"},
+lesser_moonstone:{id:1705,es:"Piedra lunar inferior",en:"Lesser Moonstone",icon:"inv_misc_gem_crystal_01",q:"uncommon"},
+citrine:{id:3864,es:"Citrino",en:"Citrine",icon:"inv_misc_gem_opal_02",q:"uncommon"},
+aquamarine:{id:7909,es:"Aguamarina",en:"Aquamarine",icon:"inv_misc_gem_crystal_02",q:"uncommon"},
+star_ruby:{id:7910,es:"Rubí estrella",en:"Star Ruby",icon:"inv_misc_gem_ruby_02",q:"uncommon"},
+blue_sapphire:{id:12361,es:"Zafiro azul",en:"Blue Sapphire",icon:"inv_misc_gem_sapphire_02",q:"uncommon"},
+huge_emerald:{id:12364,es:"Esmeralda enorme",en:"Huge Emerald",icon:"inv_misc_gem_emerald_01",q:"uncommon"},
+large_opal:{id:12799,es:"Ópalo grande",en:"Large Opal",icon:"inv_misc_gem_opal_01",q:"uncommon"},
+azeroth_diamond:{id:12800,es:"Diamante de Azeroth",en:"Azerothian Diamond",icon:"inv_misc_gem_diamond_01",q:"uncommon"},
+blood_garnet:{id:23077,es:"Granate de sangre",en:"Blood Garnet",icon:"inv_misc_gem_bloodgem_03",q:"uncommon"},
+deep_peridot:{id:23079,es:"Peridoto intenso",en:"Deep Peridot",icon:"inv_misc_gem_deepperidot_03",q:"uncommon"},
+shadow_draenite:{id:23107,es:"Draenita de las Sombras",en:"Shadow Draenite",icon:"inv_misc_gem_ebondraenite_03",q:"uncommon"},
+golden_draenite:{id:23112,es:"Draenita dorada",en:"Golden Draenite",icon:"inv_misc_gem_goldendraenite_03",q:"uncommon"},
+azure_moonstone:{id:23117,es:"Piedra lunar azur",en:"Azure Moonstone",icon:"inv_misc_gem_azuremoonstone_03",q:"uncommon"},
+flame_spessarite:{id:21929,es:"Espesartita de llamas",en:"Flame Spessarite",icon:"inv_misc_gem_flamespessarite_03",q:"uncommon"},
+living_ruby:{id:23436,es:"Rubí vivo",en:"Living Ruby",icon:"inv_misc_gem_ruby_01",q:"rare"},
+talasite:{id:23437,es:"Talasita",en:"Talasite",icon:"inv_misc_gem_talasite_01",q:"rare"},
+star_of_elune:{id:23438,es:"Estrella de Elune",en:"Star of Elune",icon:"inv_misc_gem_pearl_06",q:"rare"},
+noble_topaz:{id:23439,es:"Topacio noble",en:"Noble Topaz",icon:"inv_misc_gem_topaz_01",q:"rare"},
+dawnstone:{id:23440,es:"Piedra del alba",en:"Dawnstone",icon:"inv_misc_gem_topaz_02",q:"rare"},
+nightseye:{id:23441,es:"Ojo de noche",en:"Nightseye",icon:"inv_misc_gem_nightseye_01",q:"rare"},
+bloodstone:{id:36917,es:"Sangrita",en:"Bloodstone",icon:"inv_jewelcrafting_gem_08",q:"uncommon"},
+sun_crystal:{id:36920,es:"Piedra del sol",en:"Sun Crystal",icon:"inv_jewelcrafting_gem_12",q:"uncommon"},
+chalcedony:{id:36923,es:"Calcedonia",en:"Chalcedony",icon:"inv_jewelcrafting_gem_09",q:"uncommon"},
+shadow_crystal:{id:36926,es:"Cristal de sombra",en:"Shadow Crystal",icon:"inv_jewelcrafting_gem_10",q:"uncommon"},
+huge_citrine:{id:36929,es:"Citrino enorme",en:"Huge Citrine",icon:"inv_jewelcrafting_gem_11",q:"uncommon"},
+dark_jade:{id:36932,es:"Jaspe oscuro",en:"Dark Jade",icon:"inv_jewelcrafting_gem_07",q:"uncommon"},
+scarlet_ruby:{id:36918,es:"Rubí escarlata",en:"Scarlet Ruby",icon:"inv_jewelcrafting_gem_04",q:"rare"},
+autumns_glow:{id:36921,es:"Brillo otoñal",en:"Autumn's Glow",icon:"inv_jewelcrafting_gem_03",q:"rare"},
+sky_sapphire:{id:36924,es:"Zafiro celestial",en:"Sky Sapphire",icon:"inv_jewelcrafting_gem_05",q:"rare"},
+twilight_opal:{id:36927,es:"Ópalo crepuscular",en:"Twilight Opal",icon:"inv_jewelcrafting_gem_06",q:"rare"},
+monarch_topaz:{id:36930,es:"Topacio monarca",en:"Monarch Topaz",icon:"inv_jewelcrafting_gem_02",q:"rare"},
+forest_emerald:{id:36933,es:"Esmeralda del bosque",en:"Forest Emerald",icon:"inv_jewelcrafting_gem_01",q:"rare"},
+cardinal_ruby:{id:36919,es:"Rubí cárdeno",en:"Cardinal Ruby",icon:"inv_jewelcrafting_gem_16",q:"epic"},
+kings_amber:{id:36922,es:"Ámbar del rey",en:"King's Amber",icon:"inv_jewelcrafting_gem_15",q:"epic"},
+majestic_zircon:{id:36925,es:"Zafiro majestuoso",en:"Majestic Zircon",icon:"inv_jewelcrafting_gem_17",q:"epic"},
+dreadstone:{id:36928,es:"Piedra de terror",en:"Dreadstone",icon:"inv_jewelcrafting_gem_18",q:"epic"},
+ametrine:{id:36931,es:"Ametrino",en:"Ametrine",icon:"inv_jewelcrafting_gem_14",q:"epic"},
+eye_of_zul:{id:36934,es:"Ojo de Zul",en:"Eye of Zul",icon:"inv_jewelcrafting_gem_13",q:"epic"}
+};
+const PROSPECTING_DATA=[
+{ore:"copper_ore",skill:20,common:[{key:"malachite",prob:"50%"},{key:"tigerseye",prob:"50%"}],rare:[{key:"shadowgem",prob:"10%"}]},
+{ore:"tin_ore",skill:50,common:[{key:"lesser_moonstone",prob:"38%"},{key:"moss_agate",prob:"38%"},{key:"shadowgem",prob:"38%"}],rare:[{key:"aquamarine",prob:"3.33%"},{key:"citrine",prob:"3.33%"},{key:"jade",prob:"3.33%"}]},
+{ore:"iron_ore",skill:125,common:[{key:"lesser_moonstone",prob:"35%"},{key:"citrine",prob:"35%"},{key:"jade",prob:"35%"}],rare:[{key:"star_ruby",prob:"5%"},{key:"aquamarine",prob:"5%"}]},
+{ore:"mithril_ore",skill:175,common:[{key:"star_ruby",prob:"35%"},{key:"aquamarine",prob:"35%"},{key:"citrine",prob:"35%"}],rare:[{key:"blue_sapphire",prob:"2.5%"},{key:"large_opal",prob:"2.5%"},{key:"azeroth_diamond",prob:"2.5%"},{key:"huge_emerald",prob:"2.5%"}]},
+{ore:"thorium_ore",skill:250,common:[{key:"star_ruby",prob:"30%"},{key:"huge_emerald",prob:"16%"},{key:"azeroth_diamond",prob:"16%"},{key:"blue_sapphire",prob:"16%"},{key:"large_opal",prob:"16%"}],rareNote:"Gemas de TBC (tirada extra):",rare:[{key:"blood_garnet",prob:"1.66%"},{key:"deep_peridot",prob:"1.66%"},{key:"flame_spessarite",prob:"1.66%"},{key:"golden_draenite",prob:"1.66%"},{key:"shadow_draenite",prob:"1.66%"},{key:"azure_moonstone",prob:"1.66%"}]},
+{ore:"fel_iron_ore",skill:275,common:[{key:"blood_garnet",prob:"18%"},{key:"deep_peridot",prob:"18%"},{key:"flame_spessarite",prob:"18%"},{key:"golden_draenite",prob:"18%"},{key:"shadow_draenite",prob:"18%"},{key:"azure_moonstone",prob:"18%"}],rare:[{key:"noble_topaz",prob:"1.3%"},{key:"dawnstone",prob:"1.3%"},{key:"living_ruby",prob:"1.3%"},{key:"nightseye",prob:"1.3%"},{key:"star_of_elune",prob:"1.3%"},{key:"talasite",prob:"1.3%"}]},
+{ore:"adamantite_ore",skill:325,common:[{key:"adamantite_powder",prob:"100% (1–2 uds.)"},{key:"blood_garnet",prob:"18%"},{key:"deep_peridot",prob:"18%"},{key:"flame_spessarite",prob:"18%"},{key:"golden_draenite",prob:"18%"},{key:"shadow_draenite",prob:"18%"},{key:"azure_moonstone",prob:"18%"}],rare:[{key:"noble_topaz",prob:"4%"},{key:"dawnstone",prob:"4%"},{key:"living_ruby",prob:"4%"},{key:"nightseye",prob:"4%"},{key:"star_of_elune",prob:"4%"},{key:"talasite",prob:"4%"}]},
+{ore:"cobalt_ore",skill:350,common:[{key:"huge_citrine",prob:"23%"},{key:"shadow_crystal",prob:"23%"},{key:"bloodstone",prob:"23%"},{key:"chalcedony",prob:"23%"},{key:"dark_jade",prob:"23%"},{key:"sun_crystal",prob:"23%"}],rare:[{key:"monarch_topaz",prob:"1.3%"},{key:"forest_emerald",prob:"1.3%"},{key:"sky_sapphire",prob:"1.3%"},{key:"autumns_glow",prob:"1.3%"},{key:"scarlet_ruby",prob:"1.3%"},{key:"twilight_opal",prob:"1.3%"}]},
+{ore:"saronite_ore",skill:400,common:[{key:"huge_citrine",prob:"18%"},{key:"shadow_crystal",prob:"18%"},{key:"bloodstone",prob:"18%"},{key:"chalcedony",prob:"18%"},{key:"dark_jade",prob:"18%"},{key:"sun_crystal",prob:"18%"}],rare:[{key:"monarch_topaz",prob:"4%"},{key:"forest_emerald",prob:"4%"},{key:"sky_sapphire",prob:"4%"},{key:"autumns_glow",prob:"4%"},{key:"scarlet_ruby",prob:"4%"},{key:"twilight_opal",prob:"4%"}]},
+{ore:"titanium_ore",skill:450,common:[{key:"titanium_powder",prob:"100% (1–2 uds.)"},{key:"huge_citrine",prob:"23%"},{key:"shadow_crystal",prob:"23%"},{key:"bloodstone",prob:"23%"},{key:"chalcedony",prob:"23%"},{key:"dark_jade",prob:"23%"},{key:"sun_crystal",prob:"23%"}],rareNote:"Gemas Raras (4.5%) y Épicas (4.2%):",rare:[{key:"monarch_topaz",prob:"4.5%"},{key:"forest_emerald",prob:"4.5%"},{key:"sky_sapphire",prob:"4.5%"},{key:"autumns_glow",prob:"4.5%"},{key:"scarlet_ruby",prob:"4.5%"},{key:"twilight_opal",prob:"4.5%"},{key:"cardinal_ruby",prob:"4.2%"},{key:"majestic_zircon",prob:"4.2%"},{key:"ametrine",prob:"4.2%"},{key:"dreadstone",prob:"4.2%"},{key:"eye_of_zul",prob:"4.2%"},{key:"kings_amber",prob:"4.2%"}]}
+];
+function renderItemBadge(entry,isOre=false){
+const itemKey=typeof entry==="string"?entry:entry.key;
+const prob=typeof entry==="object"&&entry.prob?entry.prob:null;
+const item=ITEMS[itemKey];
+if(!item)return"";
+const iconUrl=`https://wow.zamimg.com/images/wow/icons/medium/${item.icon}.jpg`;
+const wowheadUrl=`https://www.wowhead.com/wotlk/es/item=${item.id}`;
+if(isOre){
+return`<a href="${wowheadUrl}" target="_blank" rel="noopener noreferrer" title="${item.es} (${item.en})" class="ore-link group flex items-center gap-3 py-1 rounded-lg"><div class="relative shrink-0 w-9 h-9 rounded-md overflow-hidden border border-q-${item.q} shadow-md bg-slate-950"><img src="${iconUrl}" alt="${item.en}" onerror="this.src='https://placehold.co/36x36/1e293b/94a3b8?text=?'" class="w-full h-full object-cover"><span class="absolute bottom-0 right-0 px-1 text-[10px] font-bold leading-tight bg-black/85 text-slate-200 rounded-tl">5</span></div><div class="ore-text-wrap min-w-0"><div class="font-semibold q-${item.q} group-hover:underline leading-snug truncate">${item.es}</div><div class="text-xs text-slate-400 truncate">${item.en}</div></div></a>`;
+}
+const probBadgeStyles={common:"bg-slate-800/95 text-slate-200 border-slate-600/60",uncommon:"bg-emerald-950/70 text-emerald-300 border-emerald-500/30",rare:"bg-sky-950/70 text-sky-300 border-sky-500/35",epic:"bg-purple-950/70 text-purple-300 border-purple-500/35"};
+return`<a href="${wowheadUrl}" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 pl-1.5 pr-2 py-1 rounded-lg bg-[#0e121a] hover:bg-[#1b2231] border border-[#1f2736] hover:border-slate-600/80 transition-all"><div class="shrink-0 w-[22px] h-[22px] rounded overflow-hidden border border-q-${item.q} bg-slate-950"><img src="${iconUrl}" alt="${item.en}" onerror="this.src='https://placehold.co/22x22/1e293b/94a3b8?text=?'" class="w-full h-full object-cover"></div><div class="leading-tight"><span class="text-xs font-medium q-${item.q} group-hover:underline block">${item.es}</span><span class="text-[10px] text-slate-400 block">${item.en}</span></div>${prob?`<span class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold tabular-nums border ${probBadgeStyles[item.q]||probBadgeStyles.common}">${prob}</span>`:""}</a>`;
+}
+function renderTable(filterText=""){
+const tbody=document.getElementById("prospectingTableBody");
+const emptyState=document.getElementById("emptyState");
+const query=filterText.trim().toLowerCase();
+tbody.innerHTML="";
+let visibleCount=0;
+PROSPECTING_DATA.forEach(row=>{
+if(query){
+const oreItem=ITEMS[row.ore];
+const matchesOreOrSkill=(oreItem&&(oreItem.es.toLowerCase().includes(query)||oreItem.en.toLowerCase().includes(query)))||String(row.skill).includes(query);
+const matchesDrop=[...row.common,...row.rare].some(entry=>{const it=ITEMS[entry.key];return(it&&(it.es.toLowerCase().includes(query)||it.en.toLowerCase().includes(query)))||(entry.prob&&entry.prob.toLowerCase().includes(query));});
+if(!matchesOreOrSkill&&!matchesDrop)return;
+}
+visibleCount++;
+const commonHtml=`${row.commonNote?`<div class="text-[11px] font-medium text-slate-400 mb-2">${row.commonNote}</div>`:""}<div class="flex flex-wrap gap-1.5">${row.common.map(e=>renderItemBadge(e,false)).join("")}</div>`;
+const rareHtml=row.rare.length===0?`<span class="text-xs italic text-slate-500">Ninguna</span>`:`${row.rareNote?`<div class="text-[11px] font-medium text-slate-400 mb-2">${row.rareNote}</div>`:""}<div class="flex flex-wrap gap-1.5">${row.rare.map(e=>renderItemBadge(e,false)).join("")}</div>`;
+const tr=document.createElement("tr");
+tr.className="hover:bg-[#18202e] transition-colors align-top";
+tr.innerHTML=`<td class="sticky-col py-3.5 px-3.5 sm:px-4 border-r border-[#1f2736] align-middle">${renderItemBadge(row.ore,true)}</td><td class="py-3.5 px-3 text-center align-middle"><span class="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">${row.skill}</span></td><td class="py-3.5 px-4">${commonHtml}</td><td class="py-3.5 px-4">${rareHtml}</td>`;
+tbody.appendChild(tr);
+});
+if(visibleCount===0){emptyState.classList.remove("hidden");}else{emptyState.classList.add("hidden");}
+if(window.$WowheadPower&&typeof window.$WowheadPower.refreshLinks==="function"){window.$WowheadPower.refreshLinks();}
+}
+document.addEventListener("DOMContentLoaded",()=>{
+renderTable();
+document.getElementById("searchInput").addEventListener("input",(e)=>renderTable(e.target.value));
+const scrollContainer=document.getElementById("tableScrollContainer");
+const tableWrapper=document.getElementById("tableWrapper");
+const handleHorizontalScroll=()=>{if(scrollContainer.scrollLeft>12){tableWrapper.classList.add("is-scrolled-x");}else{tableWrapper.classList.remove("is-scrolled-x");}};
+scrollContainer.addEventListener("scroll",handleHorizontalScroll,{passive:true});
+window.addEventListener("resize",handleHorizontalScroll,{passive:true});
+});
+</script>
+</body>
+</html>
+
