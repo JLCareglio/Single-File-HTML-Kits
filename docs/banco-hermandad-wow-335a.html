@@ -32,7 +32,10 @@ body{background-color:var(--wow-bg);background-image:radial-gradient(circle at 5
 .mode-bot .item-details{width:100%}
 .slot-dimmed{opacity:.18;filter:grayscale(85%)}
 .tab-btn{transition:all .15s ease}
-.tab-btn.active{background:linear-gradient(180deg,#2a2317 0%,#18140d 100%);border-color:#ffd100;color:#ffd100;box-shadow:0 0 12px rgba(255,209,0,.2)}
+.tab-btn .tab-icon{transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+.tab-btn:hover .tab-icon{transform:scale(1.06);border-color:rgba(255,209,0,.65)}
+.tab-btn.active{background:linear-gradient(180deg,#2a2317 0%,#18140d 100%);border-color:#ffd100;color:#ffd100;box-shadow:0 0 14px rgba(255,209,0,.22)}
+.tab-btn.active .tab-icon{border-color:#ffd100;box-shadow:0 0 12px rgba(255,209,0,.45),0 4px 8px rgba(0,0,0,.8)}
 ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:#0c0e12}::-webkit-scrollbar-thumb{background:#3d3322;border-radius:4px}::-webkit-scrollbar-thumb:hover{background:#69573a}
 </style>
 </head>
@@ -51,7 +54,7 @@ exportar csv al portapapeles
 </button>
 </div>
 </div>
-<nav id="tabs-container" class="flex flex-wrap gap-2 pt-4 pb-2 border-b border-[#2c3342]"></nav>
+<nav id="tabs-container" class="flex flex-wrap items-center gap-3.5 pt-5 pb-3.5 border-b border-[#2c3342]"></nav>
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pt-4">
 <div class="bg-[#0d1015] p-3 rounded-lg border border-slate-800">
 <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">1. Modo de Visualización</label>
@@ -125,8 +128,10 @@ async function init(){
 
 function renderTabs(){
   tabsContainer.innerHTML=bancoData.map(tab=>`
-    <button type="button" data-tab-id="${tab.id}" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-700/80 bg-[#0d1015] text-slate-300 hover:text-white hover:border-amber-500/50 text-xs font-semibold cursor-pointer">
-      <img src="https://wow.zamimg.com/images/wow/icons/small/${tab.icono}.jpg" alt="${tab.nombre}" class="w-5 h-5 rounded border border-slate-600" onerror="this.onerror=null;this.src='https://wow.zamimg.com/images/wow/icons/small/inv_misc_questionmark.jpg'">
+    <button type="button" data-tab-id="${tab.id}" class="tab-btn group relative flex items-center gap-3 pl-2 pr-4 py-2 rounded-lg border border-slate-700/80 bg-[#0d1015] text-slate-300 hover:text-white hover:border-amber-500/50 text-xs sm:text-sm font-bold tracking-wide cursor-pointer">
+      <div class="tab-icon relative -ml-3 -my-3.5 w-12 h-12 rounded-lg border-2 border-slate-600 bg-[#050608] overflow-hidden shrink-0 shadow-[0_4px_10px_rgba(0,0,0,0.85)]">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/${tab.icono}.jpg" alt="${tab.nombre}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg'">
+      </div>
       <span>${tab.nombre}</span>
     </button>
   `).join('');
