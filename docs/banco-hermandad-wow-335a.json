@@ -1,8 +1,8 @@
 {
   "pestanas": [
     {
-      "id": "pestana-materiales-clasicos",
-      "nombre": "Materiales Básicos y Clásicos",
+      "id": "profeciones",
+      "nombre": "Profeciones",
       "icono": "inv_ore_copper_01",
       "etiquetas": [
         "Minería",
@@ -47,7 +47,7 @@
         [1, 11, 2589, "Paño de lino", "inv_fabric_linen_01", 20, 1, [9, 1, 2, 10]],
         [1, 12, 10940, "Polvo extraño", "inv_enchant_duststrange", 20, 1, [11]],
         [1, 13, 10939, "Esencia mágica superior", "inv_enchant_essencemagiclarge", 20, 2, [11]],
-        [1, 14, 7068, "Fuego elemental", "inv_misc_orb_01", 10, 1, [1, 2, 5, 8]],
+        [1, 14, 7068, "Fuego elemental", "spell_fire_fire", 10, 1, [1, 2, 5, 8]],
 
         [2, 1, 2772, "Mena de hierro", "inv_ore_iron_01", 20, 1, [0, 1, 2, 3]],
         [2, 2, 3575, "Barra de hierro", "inv_ingot_iron", 20, 1, [1, 2, 3, 5]],
@@ -141,8 +141,8 @@
       ]
     },
     {
-      "id": "pestana-valiosa-profesiones",
-      "nombre": "Pestaña Valiosa para Profesiones",
+      "id": "profesiones-plus",
+      "nombre": "Profeciones+",
       "icono": "inv_misc_enchantedpearl",
       "etiquetas": [
         "Minería",
@@ -174,7 +174,7 @@
         "Encantamiento": "✨ Encantamiento (Polvos, Esencias, Cristales)"
       },
       "lista": [
-        [1, 1, 49908, "Saronita primordial", "inv_misc_enchantedpearl", 20, 4, [1, 2, 8, 9]],
+        [1, 1, 49908, "Saronita primordial", "spell_fire_felflamebreath", 20, 4, [1, 2, 8, 9]],
         [1, 2, 37663, "Barra de acero de titanes", "inv_ingot_titansteel_blue", 20, 3, [1, 2, 11]],
         [1, 3, 41594, "Paño lunar", "inv_fabric_moonshroud", 20, 3, [9]],
         [1, 4, 44128, "Pelaje ártico", "inv_misc_pelt_14", 20, 3, [7, 8, 2]],
@@ -234,13 +234,13 @@
         [4, 13, null, "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
         [4, 14, null, "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
 
-        [5, 1, 49908, "Saronita primordial", "inv_misc_enchantedpearl", 20, 4, [1, 2, 8, 9]],
+        [7, 12, null, "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
         [5, 2, 37663, "Barra de acero de titanes", "inv_ingot_titansteel_blue", 20, 3, [1, 2, 11]],
-        [5, 3, 24271, "Tela de hechizo", "inv_fabric_spellfire", 20, 3, [9]],
-        [5, 4, 29539, "Cuero de cobra", "inv_misc_leatherscrap_14", 20, 2, [8]],
+        [5, 3, 24271, "Paño de hechizos", "inv_fabric_spellfire", 20, 3, [9]],
+        [5, 4, 29539, "Escamas de cobra", "inv_misc_monsterscales_18", 20, 2, [8]],
         [5, 5, 36931, "Ametrino", "inv_jewelcrafting_gem_40", 20, 4, [3, 5]],
         [5, 6, 36930, "Topacio monarca", "inv_jewelcrafting_gem_02", 20, 3, [3, 5]],
-        [5, 7, 41266, "Diamante de llama celeste", "inv_jewelcrafting_iceblade_01", 20, 3, [3, 5]],
+        [5, 7, 41266, "Diamante de llama celeste", "inv_jewelcrafting_icediamond_01", 20, 3, [3, 5]],
         [5, 8, 34053, "Fragmento onírico pequeño", "inv_enchant_dreamshard_01", 20, 3, [11]],
         [5, 9, 35625, "Vida eterna", "inv_elemental_eternal_life", 10, 2, [5, 9, 8, 6, 4]],
         [5, 10, 99905, "Diseño: Herrería (Armas / Legado)", "inv_scroll_04", 1, 3, [1]],
@@ -249,9 +249,9 @@
         [5, 13, null, "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
         [5, 14, null, "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
 
-        [6, 1, 47556, "Orbe de cruzado", "spell_holy_rune", 20, 4, [1, 8, 9]],
+        [7, 12, null, "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
         [6, 2, 23572, "Abisal primigenio", "inv_elemental_primal_nether", 10, 3, [1, 2, 8, 9]],
-        [6, 3, 24272, "Tela de sombra", "inv_fabric_felcloth_ebo", 20, 3, [9]],
+        [6, 3, 24272, "Paño de las Sombras", "inv_fabric_felcloth_ebon", 20, 3, [9]],
         [6, 4, 29547, "Escama de viento", "inv_misc_monsterscales_03", 20, 2, [8]],
         [6, 5, 36934, "Ojo de Zul", "inv_jewelcrafting_gem_41", 20, 4, [3, 5]],
         [6, 6, 36933, "Esmeralda del bosque", "inv_jewelcrafting_gem_01", 20, 3, [3, 5]],
@@ -264,7 +264,7 @@
         [6, 13, null, "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
         [6, 14, null, "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
 
-        [7, 1, 43102, "Orbe congelado", "spell_frost_frozencore", 20, 3, [9, 8, 1, 2, 5, 6]],
+        [7, 12, null, "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
         [7, 2, 30183, "Vorágine abisal", "inv_elemental_mote_nether", 20, 4, [1, 2, 8, 9]],
         [7, 3, 21881, "Telaraña abisal", "inv_misc_web_01", 20, 1, [9, 8]],
         [7, 4, 42253, "Telaraña de tejeescarcha", "inv_misc_web_02", 20, 1, [9, 8]],
