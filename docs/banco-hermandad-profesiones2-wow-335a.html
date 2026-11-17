@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Banco de Hermandad: Pestaña Valiosa para Profesiónes - WotLK 3.3.5a</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>const whTooltips={colorLinks:false,iconizeLinks:false,renameLinks:false,hide:{sellprice:true}};</script>
+<script src="https://wow.zamimg.com/js/tooltips.js" defer></script>
+<style>
+:root{--wow-bg:#0c0e12}
+body{background-color:var(--wow-bg);background-image:radial-gradient(circle at 50% 0%,rgba(30,58,95,.25) 0%,transparent 60%),radial-gradient(circle at 50% 100%,rgba(120,82,25,.15) 0%,transparent 60%);color:#e2e8f0;font-family:'Inter',sans-serif;min-height:100vh}
+.font-wow{font-family:'Cinzel',serif}
+.q-1{border-color:#9d9d9d;color:#fff}
+.q-2{border-color:#1eff00;color:#1eff00}
+.q-3{border-color:#0070dd;color:#3b9eff}
+.q-4{border-color:#a335ee;color:#c678ff}
+.wow-slot{background:linear-gradient(145deg,#12151c 0%,#07090c 100%);box-shadow:inset 0 0 8px rgba(0,0,0,.9),0 2px 4px rgba(0,0,0,.5);contain:content}
+.wow-slot:hover{box-shadow:inset 0 0 6px rgba(255,209,0,.25),0 0 14px rgba(255,209,0,.35);z-index:20}
+.wow-icon-frame{position:relative;width:44px;height:44px;border-radius:6px;border-width:2px;overflow:hidden;flex-shrink:0;background-color:#050608;box-shadow:inset 0 0 6px #000}
+.wow-icon-frame img{width:100%;height:100%;object-fit:cover}
+.stack-badge{position:absolute;bottom:0;right:2px;font-weight:800;font-size:11px;line-height:1;color:#fff;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 1px 2px #000;pointer-events:none}
+.coord-badge{position:absolute;top:1px;left:2px;font-size:9px;font-weight:700;color:rgba(255,209,0,.85);text-shadow:1px 1px 1px #000;pointer-events:none}
+.grid-cols-14{grid-template-columns:repeat(14,minmax(0,1fr))}
+.mode-ingame .bank-grid{grid-template-columns:repeat(14,minmax(46px,56px));justify-content:center;gap:5px;max-width:920px;min-width:0!important;margin:0 auto;background:#111318;padding:16px;border:2px solid #594a33;border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.85)}
+.mode-ingame .wow-slot{padding:4px;justify-content:center;align-items:center;aspect-ratio:1/1}
+.mode-ingame .item-details,.hide-stack .stack-badge,.hide-coords .coord-badge{display:none!important}
+.mode-ingame .wow-icon-frame{width:48px;height:48px}
+.slot-dimmed{opacity:.18;filter:grayscale(85%)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#0c0e12}
+::-webkit-scrollbar-thumb{background:#3d3322;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#69573a}
+</style>
+</head>
+<body class="p-3 md:p-6">
+<div class="max-w-[1440px] mx-auto">
+<header class="bg-[#151921]/95 border border-[#4a3d28] rounded-xl p-4 md:p-6 mb-5 shadow-2xl">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#2c3342] pb-4 min-h-[58px]">
+<div>
+<h1 class="font-wow text-2xl md:text-3xl font-bold text-[#ffd100] mt-2 tracking-wide">Banco de Hermandad: Pestaña Valiosa para Profesiónes</h1>
+<span class="px-2.5 py-0.5 text-xs font-bold tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded">WotLK 3.3.5a</span>
+</div>
+<div id="export-container" class="hidden flex-wrap items-center gap-2.5">
+<button type="button" id="btn-export" class="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-b from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-semibold text-sm rounded-lg border border-amber-400/50 shadow-lg cursor-pointer">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+exportar csv al portapapeles
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pt-4">
+<div class="bg-[#0d1015] p-3 rounded-lg border border-slate-800">
+<label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">1. Modo de Visualización</label>
+<div class="grid grid-cols-3 gap-1.5" id="view-modes">
+<button type="button" data-mode="ingame" class="view-btn px-2 py-1.5 text-xs font-semibold rounded bg-amber-500 text-slate-950 hover:bg-amber-400 cursor-pointer">Compacto</button>
+<button type="button" data-mode="compact" class="view-btn px-2 py-1.5 text-xs font-semibold rounded bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white cursor-pointer">Detallado</button>
+<button type="button" data-mode="bot" class="view-btn px-2 py-1.5 text-xs font-semibold rounded bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white cursor-pointer">Debugging</button>
+</div>
+</div>
+<div class="bg-[#0d1015] p-3 rounded-lg border border-slate-800">
+<label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">2. Etiquetas en Casilla</label>
+<div class="flex flex-wrap gap-3 items-center h-8">
+<label class="inline-flex items-center gap-2 text-xs font-medium text-slate-200 cursor-pointer select-none">
+<input type="checkbox" id="toggle-stack" checked class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+<span>Max Stack</span>
+</label>
+<label class="inline-flex items-center gap-2 text-xs font-medium text-slate-200 cursor-pointer select-none">
+<input type="checkbox" id="toggle-coords" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+<span>Coords [F:C]</span>
+</label>
+</div>
+</div>
+<div class="bg-[#0d1015] p-3 rounded-lg border border-slate-800">
+<label for="prof-filter" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">3. Resaltar por Profesión</label>
+<select id="prof-filter" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs font-medium rounded-md px-2.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer">
+<option value="ALL">Todas las profesiones</option>
+<option value="Minería">⛏️ Minería (Menas)</option>
+<option value="Herrería">🔨 Herrería (Menas, Barras, Eternos, Orbes)</option>
+<option value="Ingeniería">⚙️ Ingeniería (Menas, Barras, Paños, Eternos)</option>
+<option value="Joyería">💎 Joyería (Menas, Barras, Gemas, Eternos)</option>
+<option value="Herboristería">🌿 Herboristería (Hierbas, Lotos, Vida eterna)</option>
+<option value="Alquimia">⚗️ Alquimia (Hierbas, Lotos, Gemas, Eternos)</option>
+<option value="Inscripción">📜 Inscripción (Hierbas, Pigmentos, Tintas)</option>
+<option value="Desuello">🔪 Desuello (Cueros, Pelajes)</option>
+<option value="Peletería">🧥 Peletería (Pellejos Curtidos, Cueros, Eternos)</option>
+<option value="Sastrería">🧵 Sastrería (Telas, Madejas, Eternos)</option>
+<option value="Primeros auxilios">⛑️ Primeros auxilios (Paños)</option>
+<option value="Encantamiento">✨ Encantamiento (Polvos, Esencias, Cristales)</option>
+</select>
+</div>
+<div class="bg-[#0d1015] p-3 rounded-lg border border-slate-800">
+<label for="search-input" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">4. Buscar Material o ItemID</label>
+<div class="relative">
+<input type="text" id="search-input" placeholder="Ej: Saronita, Pellejo, 36913..." class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-md pl-3 pr-8 py-1.5 focus:outline-none focus:border-amber-500">
+<button type="button" id="btn-clear" title="Limpiar búsqueda" class="absolute right-2 top-1.5 text-slate-400 hover:text-white text-xs font-bold cursor-pointer">✕</button>
+</div>
+</div>
+</div>
+</header>
+<main id="bank-container" class="mode-ingame hide-coords bg-[#12161f]/90 border-2 border-[#4a3d28] rounded-xl p-2.5 md:p-4 shadow-2xl overflow-x-auto">
+<div id="bank-grid" class="bank-grid grid grid-cols-14 gap-1.5 min-w-[1780px]"></div>
+</main>
+</div>
+<div id="toast" class="hidden fixed bottom-5 right-5 bg-emerald-900/95 border border-emerald-400 text-emerald-100 px-4 py-3 rounded-lg shadow-2xl text-sm font-medium z-50 flex items-center gap-2.5 pointer-events-none">
+<svg class="w-5 h-5 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+<span id="toast-msg">Copiado al portapapeles</span>
+</div>
+<script>
+const P = [
+  "Minería", "Herrería", "Ingeniería", "Joyería", "Herboristería", "Alquimia",
+  "Inscripción", "Desuello", "Peletería", "Sastrería", "Primeros auxilios", "Encantamiento"
+];
+
+const RAW = [
+  // ==================== FILA 1: ORBES DE BANDA, ACERO DE TITANES Y RUBÍES ====================
+  [1, 1, 49908, "Saronita primordial", "inv_misc_enchantedpearl", 20, 4, [1, 2, 8, 9]],
+  [1, 2, 37663, "Barra de acero de titanes", "inv_ingot_titansteel_blue", 20, 3, [1, 2, 11]],
+  [1, 3, 41594, "Paño lunar", "inv_fabric_moonshroud", 20, 3, [9]],
+  [1, 4, 44128, "Pelaje ártico", "inv_misc_pelt_14", 20, 3, [7, 8, 2]],
+  [1, 5, 36919, "Rubí cárdeno", "inv_jewelcrafting_gem_37", 20, 4, [3, 5]],
+  [1, 6, 36918, "Rubí escarlata", "inv_jewelcrafting_gem_04", 20, 3, [3, 5, 11]],
+  [1, 7, 36908, "Loto de Escarcha", "inv_misc_herb_frostlotus", 20, 2, [4, 5, 9]],
+  [1, 8, 34057, "Cristal abisal", "inv_enchant_abysscrystal", 20, 4, [11]],
+  [1, 9, 36860, "Fuego eterno", "inv_elemental_eternal_fire", 10, 2, [1, 2, 9, 5, 11]],
+  [1, 10, 99901, "Diseño: Herrería (Banda / Épico)", "inv_scroll_04", 1, 4, [1]],
+  [1, 11, 99908, "Fórmula: Encantamiento (Arma / Raro)", "inv_misc_note_01", 1, 3, [11]],
+  [1, 12, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [1, 13, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [1, 14, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+
+  // ==================== FILA 2: ORBE DE CRUZADO, TELAS CD Y ÁMBARES ====================
+  [2, 1, 47556, "Orbe de cruzado", "spell_holy_rune", 20, 4, [1, 8, 9]],
+  [2, 2, 41163, "Barra de titanio", "inv_ingot_platinum", 20, 2, [1, 2, 3, 11]],
+  [2, 3, 41593, "Paño de ébano", "inv_fabric_ebonweave", 20, 3, [9]],
+  [2, 4, 44128, "Pelaje ártico", "inv_misc_pelt_14", 20, 3, [7, 8, 2]],
+  [2, 5, 36922, "Ámbar del rey", "inv_jewelcrafting_gem_36", 20, 4, [3, 5]],
+  [2, 6, 36921, "Resplandor otoñal", "inv_jewelcrafting_gem_03", 20, 3, [3, 5]],
+  [2, 7, 36908, "Loto de Escarcha", "inv_misc_herb_frostlotus", 20, 2, [4, 5, 9]],
+  [2, 8, 34057, "Cristal abisal", "inv_enchant_abysscrystal", 20, 4, [11]],
+  [2, 9, 35622, "Agua eterna", "inv_elemental_eternal_water", 10, 2, [5, 2, 9, 8, 11]],
+  [2, 10, 99902, "Patrón: Peletería (Banda / Épico)", "inv_scroll_04", 1, 4, [8]],
+  [2, 11, 99909, "Boceto: Joyería (Corte Épico / Raro)", "inv_scroll_05", 1, 3, [3]],
+  [2, 12, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [2, 13, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [2, 14, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+
+  // ==================== FILA 3: ORBE RÚNICO, TEJIDO DE HECHIZO Y CIRCONES ====================
+  [3, 1, 45087, "Orbe rúnico", "inv_misc_runedorb_01", 20, 4, [1, 8, 9]],
+  [3, 2, 36910, "Mena de titanio", "inv_ore_platinum_01", 20, 2, [0, 3, 1, 2]],
+  [3, 3, 41595, "Tejido de hechizo", "inv_fabric_spellweave", 20, 3, [9]],
+  [3, 4, 38558, "Escama de dragón crepuscular", "inv_misc_monsterscales_17", 20, 1, [8]],
+  [3, 5, 36925, "Circón majestuoso", "inv_jewelcrafting_gem_38", 20, 4, [3, 5]],
+  [3, 6, 36924, "Zafiro celestial", "inv_jewelcrafting_gem_05", 20, 3, [3, 5]],
+  [3, 7, 22794, "Loto vil", "inv_misc_herb_fellotus", 20, 2, [4, 5, 9, 11]],
+  [3, 8, 34052, "Fragmento onírico", "inv_enchant_dreamshard_02", 20, 3, [11]],
+  [3, 9, 35623, "Aire eterno", "inv_elemental_eternal_air", 10, 2, [2, 9, 5, 11]],
+  [3, 10, 99903, "Patrón: Sastrería (Banda / Épico)", "inv_scroll_04", 1, 4, [9]],
+  [3, 11, 99910, "Esquema: Ingeniería (Raro / Épico)", "inv_scroll_06", 1, 3, [2]],
+  [3, 12, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [3, 13, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [3, 14, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+
+  // ==================== FILA 4: ORBE CONGELADO, PIEDRAS DE TERROR Y FRAGMENTOS ====================
+  [4, 1, 43102, "Orbe congelado", "spell_frost_frozencore", 20, 3, [9, 8, 1, 2, 5, 6]],
+  [4, 2, 46849, "Partículas de titanio", "classic_inv_misc_dust_03", 20, 2, [3]],
+  [4, 3, 21845, "Tela lunar primigenia", "inv_fabric_moonrag_primal", 20, 3, [9]],
+  [4, 4, 38561, "Quitina nerubiana", "inv_misc_monsterscales_18", 20, 1, [8]],
+  [4, 5, 36928, "Piedra de terror", "inv_jewelcrafting_gem_42", 20, 4, [3, 5]],
+  [4, 6, 36927, "Ópalo crepuscular", "inv_jewelcrafting_gem_06", 20, 3, [3, 5]],
+  [4, 7, 13468, "Loto negro", "inv_misc_herb_blacklotus", 20, 2, [4, 5, 9]],
+  [4, 8, 34052, "Fragmento onírico", "inv_enchant_dreamshard_02", 20, 3, [11]],
+  [4, 9, 35624, "Tierra eterna", "inv_elemental_eternal_earth", 10, 2, [1, 3, 2, 8]],
+  [4, 10, 99904, "Receta: Alquimia (Frasco / Transmutación)", "inv_scroll_03", 1, 3, [5]],
+  [4, 11, 99911, "Técnica: Inscripción (Glifo / Libro)", "inv_scroll_03", 1, 3, [6]],
+  [4, 12, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [4, 13, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [4, 14, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+
+  // ==================== FILA 5: AMETRINOS, TELAS TBC Y VIDA ETERNA ====================
+  [5, 1, 49908, "Saronita primordial", "inv_misc_enchantedpearl", 20, 4, [1, 2, 8, 9]],
+  [5, 2, 37663, "Barra de acero de titanes", "inv_ingot_titansteel_blue", 20, 3, [1, 2, 11]],
+  [5, 3, 24271, "Tela de hechizo", "inv_fabric_spellfire", 20, 3, [9]],
+  [5, 4, 29539, "Cuero de cobra", "inv_misc_leatherscrap_14", 20, 2, [8]],
+  [5, 5, 36931, "Ametrino", "inv_jewelcrafting_gem_40", 20, 4, [3, 5]],
+  [5, 6, 36930, "Topacio monarca", "inv_jewelcrafting_gem_02", 20, 3, [3, 5]],
+  [5, 7, 41266, "Diamante de llama celeste", "inv_jewelcrafting_iceblade_01", 20, 3, [3, 5]],
+  [5, 8, 34053, "Fragmento onírico pequeño", "inv_enchant_dreamshard_01", 20, 3, [11]],
+  [5, 9, 35625, "Vida eterna", "inv_elemental_eternal_life", 10, 2, [5, 9, 8, 6, 4]],
+  [5, 10, 99905, "Diseño: Herrería (Armas / Legado)", "inv_scroll_04", 1, 3, [1]],
+  [5, 11, 99912, "Receta: Cocina (Festín / Banda)", "inv_scroll_03", 1, 2, []],
+  [5, 12, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [5, 13, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [5, 14, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+
+  // ==================== FILA 6: OJO DE ZUL, DIAMANTE ASSEDIO Y SOMBRA ETERNA ====================
+  [6, 1, 47556, "Orbe de cruzado", "spell_holy_rune", 20, 4, [1, 8, 9]],
+  [6, 2, 23572, "Abisal primigenio", "inv_elemental_primal_nether", 10, 3, [1, 2, 8, 9]],
+  [6, 3, 24272, "Tela de sombra", "inv_fabric_felcloth_ebo", 20, 3, [9]],
+  [6, 4, 29547, "Escama de viento", "inv_misc_monsterscales_03", 20, 2, [8]],
+  [6, 5, 36934, "Ojo de Zul", "inv_jewelcrafting_gem_41", 20, 4, [3, 5]],
+  [6, 6, 36933, "Esmeralda del bosque", "inv_jewelcrafting_gem_01", 20, 3, [3, 5]],
+  [6, 7, 41334, "Diamante de asedio de tierra", "inv_jewelcrafting_shadowspirit_01", 20, 3, [3, 5]],
+  [6, 8, 22450, "Cristal de vacío", "inv_enchant_voidcrystal", 20, 4, [11]],
+  [6, 9, 35627, "Sombra eterna", "inv_elemental_eternal_shadow", 10, 2, [9, 11, 1, 2]],
+  [6, 10, 99906, "Patrón: Peletería / Sastrería (Raro)", "inv_scroll_05", 1, 3, [8, 9]],
+  [6, 11, 99913, "Fórmula: Encantamiento (Legado / TBC)", "inv_misc_note_01", 1, 3, [11]],
+  [6, 12, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [6, 13, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [6, 14, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+
+  // ==================== FILA 7: RESERVAS DE TRANSMUTACIÓN Y RECETAS VARIAS ====================
+  [7, 1, 43102, "Orbe congelado", "spell_frost_frozencore", 20, 3, [9, 8, 1, 2, 5, 6]],
+  [7, 2, 30183, "Vorágine abisal", "inv_elemental_mote_nether", 20, 4, [1, 2, 8, 9]],
+  [7, 3, 21881, "Telaraña abisal", "inv_misc_web_01", 20, 1, [9, 8]],
+  [7, 4, 42253, "Telaraña de tejeescarcha", "inv_misc_web_02", 20, 1, [9, 8]],
+  [7, 5, 42225, "Lágrima de dragón", "inv_jewelcrafting_gem_31", 20, 4, [3]],
+  [7, 6, 40195, "Pygmy Oil / Aceite de pigmeo", "inv_potion_07", 20, 1, [5]],
+  [7, 7, 40199, "Pez ángel de tierra", "inv_misc_fish_68", 20, 1, [5]],
+  [7, 8, 20725, "Cristal de nexo", "inv_enchant_shardnexuslarge", 20, 4, [11]],
+  [7, 9, 34055, "Esencia cósmica superior", "inv_enchant_essencecosmicgreater", 20, 2, [11]],
+  [7, 10, 99907, "Receta / Plano / Boceto (Varios)", "inv_scroll_03", 1, 3, [1, 2, 3, 5, 6, 8, 9, 11]],
+  [7, 11, 99914, "Receta / Plano / Boceto (Varios)", "inv_scroll_03", 1, 3, [1, 2, 3, 5, 6, 8, 9, 11]],
+  [7, 12, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [7, 13, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []],
+  [7, 14, , "Espacio Libre", "inv_misc_questionmark", 1, 0, []]
+],
+$=id=>document.getElementById(id),
+container=$('bank-container'),grid=$('bank-grid'),exportBox=$('export-container'),profFilter=$('prof-filter'),searchInput=$('search-input'),toast=$('toast'),toastMsg=$('toast-msg');
+let slotNodes=[],toastTimer;
+
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+function renderBank(){
+const frag=document.createDocumentFragment();
+slotNodes=RAW.map(([r,c,id,name,icon,stack,q,profs])=>{
+const profNames=profs.map(i=>P[i]),a=document.createElement('a');
+a.href=`https://www.wowhead.com/wotlk/es/item=${id}`;
+a.target='_blank';
+a.rel='noopener noreferrer';
+a.dataset.wowhead=`item=${id}&domain=es.wotlk`;
+a.className='wow-slot group relative flex items-center gap-2 p-2 rounded-lg border border-slate-800/90 hover:border-amber-400/80 text-left no-underline';
+a.innerHTML=`<div class="wow-icon-frame q-${q}"><img src="https://wow.zamimg.com/images/wow/icons/large/${icon}.jpg" alt="${name}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg'"><span class="coord-badge">[${r}:${c}]</span><span class="stack-badge">${stack}</span></div><div class="item-details min-w-0 flex-1"><div class="text-[11px] font-semibold leading-tight break-words q-${q}">${name}</div><div class="bot-meta hidden mt-1.5 space-y-1"><div class="flex items-center gap-1.5 text-[10px] font-mono text-amber-300/90"><span>ID:${id}</span></div><div class="flex flex-wrap gap-1">${profNames.map(p=>`<span class="inline-block px-1.5 py-0.5 bg-slate-800/90 text-slate-300 border border-slate-700 rounded text-[9px] leading-tight">${p}</span>`).join('')}</div></div></div>`;
+frag.appendChild(a);
+return{el:a,profs:profNames,search:norm(`${name} ${id}`)};
+});
+grid.appendChild(frag);
+window.$WowheadPower?.refreshLinks?.();
+}
+
+function setViewMode(mode){
+document.querySelectorAll('.view-btn').forEach(b=>{
+const on=b.dataset.mode===mode;
+b.classList.toggle('bg-amber-500',on);
+b.classList.toggle('text-slate-950',on);
+b.classList.toggle('hover:bg-amber-400',on);
+b.classList.toggle('bg-slate-800',!on);
+b.classList.toggle('text-slate-300',!on);
+b.classList.toggle('hover:bg-slate-700',!on);
+b.classList.toggle('hover:text-white',!on);
+});
+container.classList.toggle('mode-ingame',mode==='ingame');
+const isBot=mode==='bot';
+exportBox.classList.toggle('hidden',!isBot);
+exportBox.classList.toggle('flex',isBot);
+grid.querySelectorAll('.bot-meta').forEach(el=>el.classList.toggle('hidden',!isBot));
+}
+
+function applyFilters(){
+const prof=profFilter.value,q=norm(searchInput.value.trim()),hasFilter=prof!=='ALL'||q!=='';
+for(let i=0;i<slotNodes.length;i++){
+const{el,profs,search}=slotNodes[i],match=(prof==='ALL'||profs.includes(prof))&&(q===''||search.includes(q));
+el.classList.toggle('slot-dimmed',!match);
+el.classList.toggle('ring-1',match&&hasFilter);
+el.classList.toggle('ring-amber-400/70',match&&hasFilter);
+}
+}
+
+function showToast(msg){
+toastMsg.textContent=msg;
+toast.classList.remove('hidden');
+clearTimeout(toastTimer);
+toastTimer=setTimeout(()=>toast.classList.add('hidden'),2500);
+}
+
+async function copyData(){
+const csv=[
+'Fila y Columna,ItemID,MaxStack,Nombre,Profesiones Relacionadas',
+...RAW.map(([r,c,id,name,,stack,,profs])=>`"F${r}:C${String(c).padStart(2,'0')}",${id},${stack},"${name.replace(/"/g,'""')}","${profs.map(i=>P[i]).join(', ')}"`)
+].join('\n');
+try{
+await navigator.clipboard.writeText(csv);
+}catch{
+const ta=Object.assign(document.createElement('textarea'),{value:csv});
+document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+}
+showToast('¡Copiado al portapapeles!');
+}
+
+$('view-modes').addEventListener('click',e=>{const btn=e.target.closest('[data-mode]');if(btn)setViewMode(btn.dataset.mode)});
+$('toggle-stack').addEventListener('change',e=>container.classList.toggle('hide-stack',!e.target.checked));
+$('toggle-coords').addEventListener('change',e=>container.classList.toggle('hide-coords',!e.target.checked));
+profFilter.addEventListener('change',applyFilters);
+searchInput.addEventListener('input',applyFilters);
+$('btn-clear').addEventListener('click',()=>{searchInput.value='';applyFilters();searchInput.focus()});
+$('btn-export').addEventListener('click',copyData);
+
+renderBank();
+</script>
+</body>
+</html>
