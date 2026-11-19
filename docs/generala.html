@@ -1,925 +1,562 @@
-<!DOCTYPE html>
-<html lang="es" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Anotador de Generala</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Roboto', 'sans-serif'] },
-          colors: {
-            surface: { light: '#ffffff', dark: '#1e1e1e' },
-            background: { light: '#f5f5f5', dark: '#121212' },
-            cell: { light: '#e0e0e0', dark: '#2a2a2a' },
-            primary: '#90caf9'
-          }
-        }
-      }
-    };
-  </script>
-  <style>
-    html, body { height: 100%; margin: 0; }
-    body { font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; overflow: hidden; }
-    main { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
-    .dark ::-webkit-scrollbar-thumb { background: #444; }
-    .grid-layout { display: grid; grid-auto-columns: minmax(64px, 1fr); gap: 8px; padding: 16px 16px 32px; width: 100%; }
-    .board-scroll { flex: 1 1 auto; height: 100%; overflow: auto; overscroll-behavior: contain; }
-    .sticky-col { position: sticky; left: 0; z-index: 10; align-self: start; }
-    .sticky-header { position: sticky; top: 0; z-index: 20; align-self: start; }
-    .sticky-corner { position: sticky; top: 0; left: 0; z-index: 30; align-self: start; }
-    .current-player-header, .current-player-cell {
-      box-shadow: inset 0 0 0 2px rgba(59, 130, 246, .75), 0 0 0 1px rgba(59, 130, 246, .18);
-      background-image: linear-gradient(135deg, rgba(96, 165, 250, .18), rgba(59, 130, 246, .06));
-    }
-    .modal-overlay { backdrop-filter: blur(2px); animation: fadeIn .15s ease-out forwards; }
-    .modal-content { animation: slideUp .15s ease-out forwards; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    .no-select, .fast-tap { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
-  </style>
-</head>
+<!DOCTYPE html><html lang="es" class="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Anotador de Generala</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"><script>tailwind.config={darkMode:"class",theme:{extend:{fontFamily:{sans:["Roboto","sans-serif"]},colors:{surface:{light:"#ffffff",dark:"#1e1e1e"},background:{light:"#f5f5f5",dark:"#121212"},cell:{light:"#e0e0e0",dark:"#2a2a2a"},primary:"#90caf9"}}}}</script><style>html,body{min-height:100%;height:100%}body{font-family:'Roboto',sans-serif;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;overflow:hidden}input,textarea{-webkit-touch-callout:default;user-select:text;-webkit-user-select:text}main{min-height:100vh;height:100vh;display:flex;flex-direction:column;overflow:hidden}::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#555;border-radius:4px}.dark ::-webkit-scrollbar-thumb{background:#444}.grid-layout{display:grid;grid-auto-columns:minmax(64px,1fr);gap:8px;padding:16px 16px 32px;width:100%}.board-scroll{flex:1 1 auto;height:100%;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y}.sticky-col{position:sticky;left:0;z-index:10;align-self:start}.sticky-header{position:sticky;top:0;z-index:20;align-self:start}.sticky-corner{position:sticky;top:0;left:0;z-index:30;align-self:start}.current-player-header,.current-player-cell{box-shadow:inset 0 0 0 2px rgba(59,130,246,.75),0 0 0 1px rgba(59,130,246,.18);background-image:linear-gradient(135deg,rgba(96,165,250,.18),rgba(59,130,246,.06))}.modal-overlay{backdrop-filter:blur(2px);animation:fadeIn .2s ease-out forwards}.modal-content{animation:slideUp .2s ease-out forwards}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.no-select{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}</style></head>
+
 <body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-200">
-  <main class="flex-1">
-    <div id="board-scroll" class="board-scroll h-full">
-      <div id="game-grid" class="p-2 grid-layout"></div>
-    </div>
-  </main>
-
-  <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 modal-overlay hidden" onclick="closeSettings()">
-    <div class="bg-surface-light dark:bg-surface-dark w-11/12 max-w-md rounded-xl shadow-2xl flex flex-col max-h-[90vh] modal-content" onclick="event.stopPropagation()">
-      <div class="p-2 border-b border-gray-300 dark:border-gray-700 flex justify-center items-center">
-        <h2 class="text-xl font-bold">Ajustes</h2>
-      </div>
-      <div class="p-4 overflow-y-auto flex-1 space-y-4">
-        <section class="rounded-xl border border-gray-200 bg-white/80 p-3 shadow-sm dark:border-gray-700 dark:bg-[#232323]/90">
-          <div class="mb-3 border-b border-gray-200 pb-2 dark:border-gray-700">
-            <h3 class="text-sm font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">Jugadores</h3>
-          </div>
-          <button id="add-player-btn" onclick="addRandomPlayer()" class="mb-3 flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 py-2 text-sm font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600">
-            <span class="material-symbols-outlined font-bold text-lg">add</span>
-            <span>Agregar un Jugador</span>
-          </button>
-          <div id="players-list" class="space-y-2"></div>
-        </section>
-
-        <section class="rounded-xl border border-gray-200 bg-white/80 p-3 shadow-sm dark:border-gray-700 dark:bg-[#232323]/90">
-          <div class="mb-3 border-b border-gray-200 pb-2 dark:border-gray-700">
-            <h3 class="text-sm font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Apariencia</h3>
-          </div>
-          <div class="space-y-2">
-            <label onclick="toggleFullscreen()" class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none">
-              <p class="font-medium">Conmutar Pantalla Completa</p>
-            </label>
-            <label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none">
-              <p class="font-medium">Modo Oscuro</p>
-              <div class="relative inline-flex items-center">
-                <input type="checkbox" id="toggle-dark-mode" class="sr-only peer" onchange="toggleTheme(this.checked)">
-                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
-              </div>
-            </label>
-            <label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none">
-              <div>
-                <p class="font-medium">Sonido de Victoria</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Reproducir audio al ganar</p>
-              </div>
-              <div class="relative inline-flex items-center">
-                <input type="checkbox" id="toggle-audio" class="sr-only peer" onchange="toggleAudio(this.checked)">
-                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
-              </div>
-            </label>
-          </div>
-        </section>
-
-        <section class="rounded-xl border border-gray-200 bg-white/80 p-3 shadow-sm dark:border-gray-700 dark:bg-[#232323]/90">
-          <div class="mb-3 border-b border-gray-200 pb-2 dark:border-gray-700">
-            <h3 class="text-sm font-black uppercase tracking-widest text-violet-600 dark:text-violet-400">Reglas</h3>
-          </div>
-          <div class="space-y-2">
-            <label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none">
-              <div>
-                <p class="font-medium">Doble Par</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Habilitar categoría adicional</p>
-              </div>
-              <div class="relative inline-flex items-center">
-                <input type="checkbox" id="toggle-doble-pareja" class="sr-only peer" onchange="toggleDoblePar(this.checked)">
-                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
-              </div>
-            </label>
-            <label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none">
-              <div>
-                <p class="font-medium">Tercia</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Habilitar categoría adicional</p>
-              </div>
-              <div class="relative inline-flex items-center">
-                <input type="checkbox" id="toggle-tercia" class="sr-only peer" onchange="toggleTercia(this.checked)">
-                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
-              </div>
-            </label>
-            <label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none">
-              <div>
-                <p class="font-medium">Generala Servida</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Habilitar la opción de Generala Servida (gana)</p>
-              </div>
-              <div class="relative inline-flex items-center">
-                <input type="checkbox" id="toggle-generala-servida" class="sr-only peer" onchange="toggleGeneralaServida(this.checked)">
-                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
-              </div>
-            </label>
-            <label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none">
-              <div>
-                <p class="font-medium">Generala Real</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Habilitar la opción Generala Real (armada con los 1)</p>
-              </div>
-              <div class="relative inline-flex items-center">
-                <input type="checkbox" id="toggle-generala-real" class="sr-only peer" onchange="toggleGeneralaReal(this.checked)">
-                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
-              </div>
-            </label>
-            <label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none">
-              <div>
-                <p class="font-medium">Doble Generala</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Habilitar la opción Doble Generala o Segunda Generala</p>
-              </div>
-              <div class="relative inline-flex items-center">
-                <input type="checkbox" id="toggle-doble-generala" class="sr-only peer" onchange="toggleDobleGenerala(this.checked)">
-                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div>
-              </div>
-            </label>
-          </div>
-        </section>
-      </div>
-
-      <div class="p-4 border-t border-gray-300 dark:border-gray-700 flex gap-3">
-        <button id="reset-btn" onclick="restartIfAllowed()" class="flex-1 flex justify-center gap-2 bg-gray-300 dark:bg-gray-700 text-gray-500 p-3 rounded-lg font-medium transition">
-          <span class="material-symbols-outlined">delete</span>
-          Borrar Partida
-        </button>
-        <button id="continue-btn" onclick="closeSettings()" class="flex-1 flex justify-center gap-2 bg-gray-300 dark:bg-gray-700 text-gray-500 p-3 rounded-lg font-medium transition">
-          <span class="material-symbols-outlined">play_arrow</span>
-          Continuar
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div id="score-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 modal-overlay hidden" onclick="closeScoreModal()">
-    <div class="bg-surface-light dark:bg-surface-dark w-10/12 max-w-sm rounded-xl shadow-2xl flex flex-col modal-content" onclick="event.stopPropagation()">
-      <div class="p-5 border-b border-gray-300 dark:border-gray-700">
-        <h2 id="score-modal-title" class="text-lg font-normal text-center"></h2>
-      </div>
-      <div id="score-options" class="flex flex-col items-center max-h-[50vh] overflow-y-auto"></div>
-      <div class="flex justify-center border-t border-gray-300 dark:border-gray-700">
-        <button id="btn-delete-score" onclick="deleteCurrentScore()" class="w-full p-3 text-red-500 hover:bg-red-500/10 font-bold rounded transition hidden">BORRAR</button>
-        <button onclick="closeScoreModal()" class="w-full p-3 text-blue-500 hover:bg-blue-500/20 font-bold rounded transition">CANCELAR</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="emoji-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 modal-overlay hidden" onclick="closePlayerEditor()">
-    <div class="bg-surface-light dark:bg-surface-dark w-11/12 max-w-sm rounded-xl shadow-2xl flex flex-col modal-content" onclick="event.stopPropagation()">
-      <h3 class="text-lg font-bold pt-4 text-center">Editar jugador</h3>
-      <input id="player-name-input" type="text" maxlength="50" placeholder="Escribe un nombre" class="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] mx-4 p-2 mb-3 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <p class="text-sm text-center text-gray-500 dark:text-gray-400 mb-1 border-b border-gray-300 dark:border-gray-700">Elige un avatar</p>
-      <div class="grid grid-cols-6 gap-1 max-h-[50vh] overflow-y-auto p-1" id="emoji-grid"></div>
-      <div class="flex justify-center border-t border-gray-300 dark:border-gray-700">
-        <button type="button" onclick="closePlayerEditor()" class="flex-1 py-3 text-lg text-gray-500 hover:bg-gray-500/20 transition">Cancelar</button>
-        <button id="accept-player-editor-btn" type="button" class="flex-1 py-3 text-lg text-blue-500 hover:bg-blue-500/20 transition font-medium">Aceptar</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="victory-modal" class="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-md hidden modal-overlay" onclick="closeVictoryModal()">
-    <div class="bg-surface-light dark:bg-surface-dark w-11/12 max-w-md max-h-[90vh] rounded-2xl shadow-2xl p-6 flex flex-col items-center modal-content border border-yellow-500/30 overflow-hidden" onclick="event.stopPropagation()">
-      <div class="text-5xl mb-3 animate-bounce">🏆</div>
-      <h2 class="text-2xl font-bold text-center mb-2 text-yellow-500" id="victory-title">¡Ganador!</h2>
-      <div class="text-4xl my-3" id="victory-emoji"></div>
-      <p class="text-xl font-bold mb-4" id="victory-score"></p>
-      <div class="w-full bg-gray-100 dark:bg-[#2a2a2a] rounded-xl p-4 mb-4 shadow-inner min-h-0 flex flex-col">
-        <h4 class="text-xs text-center text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">Clasificación</h4>
-        <div id="victory-ranking" class="space-y-2 text-sm font-medium max-h-[40vh] overflow-y-auto overflow-x-hidden pr-3 min-w-0"></div>
-      </div>
-      <div class="flex gap-3 w-full mt-auto relative z-10">
-        <button onclick="closeVictoryAndViewBoard()" class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-3 rounded-xl font-medium transition">Ver Tablero</button>
-        <button onclick="restartGame()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-medium transition shadow-lg">Nueva Partida</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const STORAGE_KEY = 'generala_state';
-    const SERVIDA_CATEGORIES = ['generala', 'generalareal', 'doblegenerala'];
-    const SERVIDA_BASE_OPTIONS = { generala: [50], generalareal: [60], doblegenerala: [100] };
-
-    const DEFAULT_STATE = {
-      players: [],
-      scores: {},
-      settings: {
-        doblePareja: false,
-        tercia: false,
-        generalaServida: true,
-        generalaReal: false,
-        dobleGenerala: true,
-        darkMode: true,
-        shouldPlayWinnerAudio: true
-      },
-      isGameOver: false,
-      winnerId: null,
-      currentPlayerId: null
-    };
-
-    const CATEGORIES = [
-      { id: '1', label: '1', fullLabel: 'Uno', type: 'num', mult: 1 },
-      { id: '2', label: '2', fullLabel: 'Dos', type: 'num', mult: 2 },
-      { id: '3', label: '3', fullLabel: 'Tres', type: 'num', mult: 3 },
-      { id: '4', label: '4', fullLabel: 'Cuatro', type: 'num', mult: 4 },
-      { id: '5', label: '5', fullLabel: 'Cinco', type: 'num', mult: 5 },
-      { id: '6', label: '6', fullLabel: 'Seis', type: 'num', mult: 6 },
-      { id: 'doblepareja', label: 'DP', fullLabel: 'Doble Par', type: 'fixed', options: [5, 10], settingKey: 'doblePareja' },
-      { id: 'tercia', label: 'T', fullLabel: 'Tercia', type: 'fixed', options: [10, 15], settingKey: 'tercia' },
-      { id: 'escalera', label: 'E', fullLabel: 'Escalera', type: 'fixed', options: [20, 25] },
-      { id: 'full', label: 'F', fullLabel: 'Full', type: 'fixed', options: [30, 35] },
-      { id: 'poker', label: 'P', fullLabel: 'Póker', type: 'fixed', options: [40, 45] },
-      { id: 'generala', label: 'G', fullLabel: 'Generala', type: 'fixed', options: [50, 'W'] },
-      { id: 'generalareal', label: 'GR', fullLabel: 'Generala Real', type: 'fixed', options: [60, 'W'], settingKey: 'generalaReal' },
-      { id: 'doblegenerala', label: 'DG', fullLabel: 'Doble Generala', type: 'fixed', options: [100, 'W'], settingKey: 'dobleGenerala' }
-    ];
-
-    const EMOJIS = [
-      "🐵","🐒","🦍","🦧","🐶","🐕","🦮","🐕‍🦺","🐩","🐺","🦊","🦝","🐱","🐈","🐈‍⬛","🦁","🐯","🐅","🐆","🐴","🫎","🫏","🐎","🦄","🦓","🦌","🦬","🐮","🐂","🐃","🐄","🐷","🐖","🐗","🐽","🐏","🐑","🐐","🐪","🐫","🦙","🦒","🐘","🦣","🦏","🦛","🐭","🐁","🐀","🐹","🐰","🐇","🐿️","🦫","🦔","🦇","🐻","🐻‍❄️","🐨","🐼","🦥","🦦","🦨","🦘","🦡","🐾","🦃","🐔","🐓","🐣","🐤","🐥","🐦","🐧","🕊️","🦅","🦆","🦢","🦉","🦤","🪶","🦩","🦚","🦜","🪽","🐦‍⬛","🪿","🐦‍🔥","🪹","🐸","🐊","🐢","🦎","🐍","🐲","🐉","🦕","🦖","🐳","🐋","🐬","🫍","🦭","🐟","🐠","🐡","🦈","🐙","🐚","🪸","🪼","🦀","🦞","🦐","🦑","🐌","🦋","🐛","🐜","🐝","🪲","🐞","🦗","🪳","🕷️","🕸️","🦂","🦟","🪰","🪱","💐","🌸","💮","🪷","🏵️","🌹","🥀","🌺","🌻","🌼","🌷","🪻","🌱","🪴","🌲","🌳","🌴","🌵","🌾","🌿","☘️","🍀","🍁","🍂","🍃","🍄","🪾","🪨","🪵","🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘","🌙","🌚","🌛","🌜","☀️","🌝","🌞","🪐","⭐","🌟","🌠","🌌","☁️","⛅","⛈️","🌤️","🌥️","🌦️","🌧️","🌨️","🌩️","🌪️","🌫️","🌬️","🌀","🌈","🌂","☂️","☔","⛱️","⚡","❄️","☃️","⛄","☄️","🔥","💧","🌊"
-    ];
-
-    const winnerSound = new Audio('https://generala-scorer.vercel.app/win3.mp3');
-    let audioFadeInterval = null;
-    let state = structuredClone(DEFAULT_STATE);
-    let currentEditing = { playerId: null, catId: null };
-    let editingPlayerId = null;
-    let editingPlayerDraft = { emoji: null, name: '' };
-    let pressGuard = { active: false, pointerId: null, x: 0, y: 0, scrolled: false, suppressClickUntil: 0 };
-
-    const $ = (id) => document.getElementById(id);
-    const saveState = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    const getRandomEmoji = () => EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-
-    document.addEventListener('contextmenu', (e) => {
-      if (e.target.closest?.('.fast-tap, .no-select')) e.preventDefault();
-    }, { passive: false });
-
-    function bindFastPress(el, action) {
-      el.addEventListener('pointerdown', (e) => {
-        if (e.pointerType === 'mouse' && e.button !== 0) return;
-        e.preventDefault();
-        pressGuard = {
-          active: true,
-          pointerId: e.pointerId,
-          x: e.clientX,
-          y: e.clientY,
-          scrolled: false,
-          suppressClickUntil: performance.now() + 450
-        };
-        action();
-      }, { passive: false });
-
-      el.addEventListener('pointermove', (e) => {
-        if (!pressGuard.active || e.pointerId !== pressGuard.pointerId) return;
-        if (Math.hypot(e.clientX - pressGuard.x, e.clientY - pressGuard.y) > 8) pressGuard.scrolled = true;
-      }, { passive: true });
-
-      const clearPress = (e) => {
-        if (pressGuard.active && e.pointerId === pressGuard.pointerId) {
-          pressGuard.active = false;
-          pressGuard.pointerId = null;
-        }
-      };
-      el.addEventListener('pointerup', clearPress, { passive: true });
-      el.addEventListener('pointercancel', clearPress, { passive: true });
-
-      el.addEventListener('click', (e) => {
-        if (performance.now() < pressGuard.suppressClickUntil || pressGuard.scrolled) {
-          e.preventDefault();
-          e.stopPropagation();
-          return;
-        }
-        action();
-      });
-    }
-
-    function fadeOutWinnerAudio() {
-      if (winnerSound.paused) return;
-      clearInterval(audioFadeInterval);
-      const steps = 20;
-      const stepTime = 400 / steps;
-      const stepVol = winnerSound.volume / steps;
-      audioFadeInterval = setInterval(() => {
-        if (winnerSound.volume > stepVol) {
-          winnerSound.volume = Math.max(0, winnerSound.volume - stepVol);
-        } else {
-          clearInterval(audioFadeInterval);
-          winnerSound.pause();
-          winnerSound.currentTime = 0;
-          winnerSound.volume = 1;
-        }
-      }, stepTime);
-    }
-
-    function toggleAudio(isEnabled) {
-      state.settings.shouldPlayWinnerAudio = isEnabled;
-      saveState();
-    }
-
-    function toggleFullscreen() {
-      const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-      if (fsEl) {
-        const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
-        exit?.call(document);
-        return;
-      }
-      const req = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen || document.documentElement.mozRequestFullScreen || document.documentElement.msRequestFullscreen;
-      req?.call(document.documentElement).catch((err) => console.warn('Fullscreen no disponible:', err));
-    }
-
-    function loadState() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          state = {
-            ...structuredClone(DEFAULT_STATE),
-            ...parsed,
-            settings: { ...DEFAULT_STATE.settings, ...(parsed.settings || {}) }
-          };
-          if (parsed.settings?.dobleGeneralaServida !== undefined && parsed.settings?.generalaServida === undefined) {
-            state.settings.generalaServida = parsed.settings.dobleGeneralaServida;
-          }
-          delete state.settings.dobleGeneralaServida;
-        } catch {
-          state = structuredClone(DEFAULT_STATE);
-        }
-      } else {
-        state.settings.darkMode = Boolean(window.matchMedia?.('(prefers-color-scheme: dark)').matches);
-      }
-
-      applySettings();
-      applyTheme();
-      ensureCurrentPlayer();
-
-      if (!state.players.length) {
-        openSettings();
-      } else {
-        renderGrid();
-        if (state.isGameOver && state.winnerId) handleVictory(state.winnerId, false);
-      }
-    }
-
-    function ensureCurrentPlayer() {
-      if (!state.players.length) {
-        state.currentPlayerId = null;
-        return;
-      }
-      if (!state.currentPlayerId || !state.players.some((p) => p.id === state.currentPlayerId)) {
-        state.currentPlayerId = state.players[0].id;
-      }
-    }
-
-    function advanceTurn() {
-      if (!state.players.length) {
-        state.currentPlayerId = null;
-        return;
-      }
-      const idx = state.players.findIndex((p) => p.id === state.currentPlayerId);
-      state.currentPlayerId = state.players[(idx >= 0 ? idx + 1 : 0) % state.players.length].id;
-    }
-
-    function applyTheme() {
-      document.documentElement.classList.toggle('dark', Boolean(state.settings.darkMode));
-      $('toggle-dark-mode').checked = Boolean(state.settings.darkMode);
-    }
-
-    function syncServidaOptions() {
-      const enabled = Boolean(state.settings.generalaServida);
-      for (const catId of SERVIDA_CATEGORIES) {
-        const cat = CATEGORIES.find((c) => c.id === catId);
-        if (cat) cat.options = enabled ? [...SERVIDA_BASE_OPTIONS[catId], 'W'] : [...SERVIDA_BASE_OPTIONS[catId]];
-      }
-    }
-
-    function applySettings() {
-      syncServidaOptions();
-    }
-
-    function toggleTheme(isDark) {
-      state.settings.darkMode = isDark;
-      applyTheme();
-      saveState();
-    }
-
-    function toggleCategorySetting(settingKey, scoreKey, isEnabled) {
-      state.settings[settingKey] = isEnabled;
-      if (!isEnabled) {
-        for (const pid in state.scores) delete state.scores[pid]?.[scoreKey];
-      }
-      saveState();
-      renderGrid();
-    }
-
-    const toggleDoblePar = (v) => toggleCategorySetting('doblePareja', 'doblepareja', v);
-    const toggleTercia = (v) => toggleCategorySetting('tercia', 'tercia', v);
-    const toggleGeneralaReal = (v) => toggleCategorySetting('generalaReal', 'generalareal', v);
-    const toggleDobleGenerala = (v) => toggleCategorySetting('dobleGenerala', 'doblegenerala', v);
-
-    function toggleGeneralaServida(isEnabled) {
-      state.settings.generalaServida = isEnabled;
-      syncServidaOptions();
-      if (!isEnabled) {
-        for (const pid in state.scores) {
-          for (const catId of SERVIDA_CATEGORIES) {
-            if (state.scores[pid]?.[catId] === 'W') delete state.scores[pid][catId];
-          }
-        }
-      }
-      saveState();
-      renderGrid();
-    }
-
-    function openSettings() {
-      $('toggle-doble-pareja').checked = state.settings.doblePareja;
-      $('toggle-tercia').checked = state.settings.tercia;
-      $('toggle-generala-servida').checked = state.settings.generalaServida;
-      $('toggle-generala-real').checked = state.settings.generalaReal;
-      $('toggle-doble-generala').checked = state.settings.dobleGenerala;
-      $('toggle-audio').checked = state.settings.shouldPlayWinnerAudio;
-      renderPlayersList();
-      $('settings-modal').classList.remove('hidden');
-      updateSettingsButtonsState();
-    }
-
-    function closeSettings() {
-      $('settings-modal').classList.add('hidden');
-      if (!state.players.length) {
-        openSettings();
-        $('add-player-btn')?.focus();
-      } else {
-        renderGrid();
-      }
-    }
-
-    const getPlayerDisplayName = (player, index) => player.name?.trim() || `Jugador ${index + 1}`;
-
-    function renderPlayersList() {
-      const list = $('players-list');
-      if (!state.players.length) {
-        list.innerHTML = '<p class="font-medium text-center py-4">No hay jugadores.<br><br>Para jugar necesitas al menos uno.<br><br>Pulsa el botón verde que está arriba para<br>agregar jugadores.</p>';
-        updateSettingsButtonsState();
-        return;
-      }
-
-      list.innerHTML = state.players.map((p, index) => `
-        <div class="flex items-center bg-gray-100 dark:bg-[#2a2a2a] rounded-lg overflow-hidden">
-          <button type="button" onclick="editPlayer('${p.id}')" class="flex-1 flex items-center justify-between gap-3 px-4 py-2 text-left text-gray-700 dark:text-gray-200 rounded-lg hover:bg-blue-500 hover:text-white transition">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">${p.emoji}</span>
-              <span class="font-medium text-sm">${getPlayerDisplayName(p, index)}</span>
-            </div>
-            <span class="material-symbols-outlined text-lg font-medium">edit</span>
-          </button>
-          <div class="flex items-center">
-            <button type="button" onclick="event.stopPropagation(); movePlayer(${index}, -1)" class="py-2 px-3 text-gray-500 hover:text-white hover:bg-gray-600 rounded transition">
-              <span class="material-symbols-outlined text-lg font-bold">arrow_upward</span>
-            </button>
-            <button type="button" onclick="event.stopPropagation(); movePlayer(${index}, 1)" class="py-2 px-3 text-gray-500 hover:text-white hover:bg-gray-600 rounded transition">
-              <span class="material-symbols-outlined text-lg font-bold">arrow_downward</span>
-            </button>
-            <button type="button" onclick="event.stopPropagation(); removePlayer('${p.id}')" class="py-2 px-3 text-red-500 hover:bg-red-500/20 rounded transition">
-              <span class="material-symbols-outlined text-xl font-medium">delete</span>
-            </button>
-          </div>
-        </div>
-      `).join('');
-
-      updateSettingsButtonsState();
-    }
-
-    function movePlayer(index, dir) {
-      const target = index + dir;
-      if (target < 0 || target >= state.players.length) return;
-      [state.players[index], state.players[target]] = [state.players[target], state.players[index]];
-      saveState();
-      renderPlayersList();
-    }
-
-    function removePlayer(id) {
-      state.players = state.players.filter((p) => p.id !== id);
-      delete state.scores[id];
-      ensureCurrentPlayer();
-      saveState();
-      renderPlayersList();
-    }
-
-    function editPlayer(id) {
-      const player = state.players.find((p) => p.id === id);
-      if (player) openPlayerEditor(player.id, player.emoji, player.name);
-    }
-
-    function renderPlayerEditorGrid() {
-      const grid = $('emoji-grid');
-      const selectedEmoji = editingPlayerDraft.emoji || getRandomEmoji();
-      const frag = document.createDocumentFragment();
-
-      EMOJIS.forEach((emoji) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'text-3xl p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition transform active:scale-95';
-        btn.textContent = emoji;
-
-        if (emoji === selectedEmoji) {
-          btn.classList.add('ring-2', 'ring-blue-500');
-          queueMicrotask(() => {
-            try {
-              btn.focus();
-              btn.scrollIntoView({ block: 'center', behavior: 'smooth' });
-            } catch {}
-          });
-        }
-
-        btn.onclick = () => {
-          editingPlayerDraft.emoji = emoji;
-          renderPlayerEditorGrid();
-        };
-        frag.appendChild(btn);
-      });
-
-      grid.replaceChildren(frag);
-    }
-
-    function openPlayerEditor(playerId = null, selectedEmoji = null, initialName = '') {
-      editingPlayerId = playerId;
-      editingPlayerDraft = { emoji: selectedEmoji || getRandomEmoji(), name: initialName || '' };
-
-      const nameInput = $('player-name-input');
-      nameInput.value = editingPlayerDraft.name;
-      renderPlayerEditorGrid();
-      $('emoji-modal').classList.remove('hidden');
-
-      $('accept-player-editor-btn').onclick = () => {
-        const draftName = nameInput.value.trim();
-        const resolvedEmoji = editingPlayerDraft.emoji || getRandomEmoji();
-
-        if (editingPlayerId) {
-          const player = state.players.find((p) => p.id === editingPlayerId);
-          if (player) {
-            player.emoji = resolvedEmoji;
-            player.name = draftName;
-            saveState();
-            renderPlayersList();
-            renderGrid();
-          }
-        } else {
-          addPlayer(resolvedEmoji, draftName);
-        }
-        closePlayerEditor();
-      };
-
-      queueMicrotask(() => {
-        try {
-          nameInput.focus();
-          nameInput.select();
-        } catch {}
-      });
-    }
-
-    function closePlayerEditor() {
-      $('emoji-modal').classList.add('hidden');
-      editingPlayerId = null;
-      editingPlayerDraft = { emoji: null, name: '' };
-    }
-
-    function addPlayer(emoji, name = '') {
-      const id = `p_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-      state.players.push({ id, emoji, name: name.trim() });
-      state.scores[id] ??= {};
-      ensureCurrentPlayer();
-      saveState();
-      renderPlayersList();
-      renderGrid();
-    }
-
-    const addRandomPlayer = () => addPlayer(getRandomEmoji(), '');
-    const hasAnyRecordedScore = () => state.players.some((p) => Object.keys(state.scores[p.id] || {}).length > 0);
-
-    function restartIfAllowed() {
-      if (!state.players.length || !hasAnyRecordedScore()) {
-        openSettings();
-        renderPlayersList();
-        $('add-player-btn')?.focus();
-        return;
-      }
-      restartGame();
-      closeSettings();
-    }
-
-    function updateSettingsButtonsState() {
-      const resetBtn = $('reset-btn');
-      const continueBtn = $('continue-btn');
-      const settingsBtn = $('settings-button');
-      const hasPlayers = state.players.length > 0;
-      const canReset = hasPlayers && hasAnyRecordedScore();
-
-      if (resetBtn) {
-        resetBtn.disabled = !canReset;
-        resetBtn.className = canReset
-          ? 'flex-1 flex justify-center gap-2 bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-600 text-white p-3 rounded-lg font-medium transition'
-          : 'flex-1 flex justify-center gap-2 bg-gray-300 dark:bg-gray-700 text-gray-500 p-3 rounded-lg font-medium transition cursor-not-allowed';
-      }
-
-      if (continueBtn) {
-        continueBtn.disabled = !hasPlayers;
-        continueBtn.className = hasPlayers
-          ? 'flex-1 flex justify-center gap-2 bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-600 text-white p-3 rounded-lg font-medium transition'
-          : 'flex-1 flex justify-center gap-2 bg-gray-300 dark:bg-gray-700 text-gray-500 p-3 rounded-lg font-medium transition cursor-not-allowed';
-      }
-
-      settingsBtn?.classList.toggle('text-gray-400', !hasPlayers);
-    }
-
-    function restartGame() {
-      for (const pid in state.scores) state.scores[pid] = {};
-      state.isGameOver = false;
-      state.winnerId = null;
-      state.currentPlayerId = state.players[0]?.id ?? null;
-      saveState();
-      closeVictoryModal();
-      renderGrid();
-    }
-
-    const calculateTotal = (playerId) =>
-      Object.values(state.scores[playerId] || {}).reduce((sum, val) => (typeof val === 'number' ? sum + val : sum), 0);
-
-    const hasServidaWin = (playerId) => {
-      const pScores = state.scores[playerId] || {};
-      return SERVIDA_CATEGORIES.some((catId) => pScores[catId] === 'W');
-    };
-
-    const getActiveCategories = () =>
-      CATEGORIES.filter((cat) => !cat.settingKey || Boolean(state.settings[cat.settingKey]));
-
-    const isCategoryAvailableForPlayer = (playerId, catId) =>
-      Boolean(playerId && catId) && state.scores[playerId]?.[catId] === undefined;
-
-    function openCategoryForCurrentPlayer(catId) {
-      if (state.currentPlayerId && !state.isGameOver) openScoreModal(state.currentPlayerId, catId);
-    }
-
-    function makeDiv(className, html, action, style = '', attrs = {}) {
-      const el = document.createElement('div');
-      el.className = className;
-      if (style) el.style.cssText = style;
-      el.innerHTML = html;
-      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
-      if (action) bindFastPress(el, action);
-      return el;
-    }
-
-    function renderGrid() {
-      const gridContainer = $('game-grid');
-      const activeCats = getActiveCategories();
-      gridContainer.style.gridTemplateColumns = `64px repeat(${state.players.length}, minmax(64px, 1fr))`;
-
-      const frag = document.createDocumentFragment();
-      const settingsDisabled = state.players.length === 0;
-      const settingsHeaderClass = settingsDisabled
-        ? 'sticky-corner fast-tap bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 text-gray-400 cursor-pointer transition'
-        : 'sticky-corner fast-tap bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition';
-
-      frag.appendChild(makeDiv(
-        settingsHeaderClass,
-        `<span class="material-symbols-outlined ${settingsDisabled ? 'text-gray-400' : 'text-gray-600 dark:text-gray-300'} text-3xl">settings</span>`,
-        openSettings,
-        '',
-        { id: 'settings-button', role: 'button', tabindex: '0' }
-      ));
-
-      for (const p of state.players) {
-        const isCurrent = p.id === state.currentPlayerId;
-        const headerEl = makeDiv(
-          `sticky-header fast-tap bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 cursor-pointer ${isCurrent ? 'current-player-header' : ''}`,
-          `<span class="text-3xl">${p.emoji}</span>${isCurrent ? '<span class="absolute top-1 right-2 text-sm text-blue-600 dark:text-blue-400">●</span>' : ''}`,
-          () => editPlayer(p.id),
-          '',
-          { role: 'button', tabindex: '0' }
-        );
-        headerEl.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            editPlayer(p.id);
-          }
-        });
-        frag.appendChild(headerEl);
-      }
-
-      for (const cat of activeCats) {
-        const playableCat = Boolean(state.currentPlayerId) && isCategoryAvailableForPlayer(state.currentPlayerId, cat.id);
-        const catStyle = playableCat ? 'background-image: linear-gradient(135deg, rgba(96, 165, 250, .18), rgba(59, 130, 246, .06));' : '';
-        const catClass = `sticky-col fast-tap bg-surface-light dark:bg-surface-dark flex items-center justify-center p-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 no-select cursor-pointer transition ${playableCat ? 'hover:bg-blue-100 dark:hover:bg-blue-900' : 'hover:bg-gray-200 dark:hover:bg-gray-700'}`;
-
-        frag.appendChild(makeDiv(
-          catClass,
-          `<span class="text-lg font-bold text-gray-700 dark:text-gray-300">${cat.label}</span>${playableCat ? '<span class="absolute top-1 right-2 text-sm text-blue-600 dark:text-blue-400">●</span>' : ''}`,
-          () => openCategoryForCurrentPlayer(cat.id),
-          catStyle
-        ));
-
-        for (const p of state.players) {
-          const score = state.scores[p.id]?.[cat.id];
-          const isCurrent = p.id === state.currentPlayerId;
-          let cellClass = `relative fast-tap bg-cell-light dark:bg-cell-dark text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 hover:opacity-80 transition cursor-pointer flex items-center justify-center rounded-lg shadow-sm font-bold text-lg ${isCurrent ? 'current-player-cell' : ''}`;
-          let displayScore = '-';
-
-          if (score === 'T') {
-            displayScore = '/';
-            cellClass = 'relative fast-tap bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-600 text-white border-red-700 dark:border-red-800 cursor-pointer flex items-center justify-center rounded-lg shadow-sm font-bold text-lg';
-          } else if (score === 'W') {
-            displayScore = 'GANÓ';
-            cellClass = 'relative fast-tap bg-yellow-500 dark:bg-yellow-600 text-black border-yellow-600 cursor-pointer flex items-center justify-center rounded-lg shadow-sm font-bold text-lg';
-          } else if (score !== undefined) {
-            displayScore = score;
-            cellClass = 'relative fast-tap bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-600 text-white border-green-700 dark:border-green-800 cursor-pointer flex items-center justify-center rounded-lg shadow-sm font-bold text-lg';
-          }
-
-          frag.appendChild(makeDiv(`${cellClass} no-select`, String(displayScore), () => openScoreModal(p.id, cat.id)));
-        }
-      }
-
-      frag.appendChild(makeDiv(
-        'sticky-col bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 mt-2',
-        '<span class="text-lg font-bold text-gray-800 dark:text-gray-100">Total</span>'
-      ));
-
-      for (const p of state.players) {
-        const isCurrent = p.id === state.currentPlayerId;
-        frag.appendChild(makeDiv(
-          `bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 mt-2 ${isCurrent ? 'current-player-cell' : ''}`,
-          `<span class="text-lg font-bold text-gray-800 dark:text-gray-100">${calculateTotal(p.id)}</span>`
-        ));
-      }
-
-      gridContainer.replaceChildren(frag);
-      updateSettingsButtonsState();
-    }
-
-    function openScoreModal(playerId, catId) {
-      if (state.isGameOver) return;
-      state.currentPlayerId = playerId;
-      saveState();
-
-      currentEditing = { playerId, catId };
-      const player = state.players.find((p) => p.id === playerId);
-      const cat = CATEGORIES.find((c) => c.id === catId);
-      state.scores[playerId] ??= {};
-      const currentScore = state.scores[playerId][catId];
-
-      $('score-modal-title').innerHTML = `<span class="text-2xl align-middle mx-1">${player.emoji}</span> ${cat.fullLabel}`;
-
-      const options = [{ label: 'TACHA', value: 'T' }];
-      if (cat.type === 'num') {
-        for (let i = 1; i <= 5; i++) options.push({ label: String(cat.mult * i), value: cat.mult * i });
-      } else if (cat.type === 'fixed') {
-        for (const opt of cat.options) {
-          options.push(opt === 'W' ? { label: 'SERVIDA (GANA)', value: 'W' } : { label: String(opt), value: opt });
-        }
-      }
-
-      const frag = document.createDocumentFragment();
-      for (const opt of options) {
-        const btn = document.createElement('button');
-        btn.className = 'w-full py-3 text-lg text-blue-500 hover:bg-blue-500/20 hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg font-bold';
-        btn.textContent = opt.label;
-        btn.onclick = () => submitScore(opt.value);
-        frag.appendChild(btn);
-      }
-      $('score-options').replaceChildren(frag);
-
-      $('btn-delete-score').classList.toggle('hidden', currentScore === undefined);
-      $('score-modal').classList.remove('hidden');
-    }
-
-    function closeScoreModal() {
-      $('score-modal').classList.add('hidden');
-      currentEditing = { playerId: null, catId: null };
-    }
-
-    function deleteCurrentScore() {
-      const { playerId, catId } = currentEditing;
-      if (playerId && catId) {
-        delete state.scores[playerId]?.[catId];
-        saveState();
-        renderGrid();
-        closeScoreModal();
-      }
-    }
-
-    function submitScore(value) {
-      const { playerId, catId } = currentEditing;
-      state.scores[playerId] ??= {};
-      state.scores[playerId][catId] = value;
-      advanceTurn();
-      saveState();
-      closeScoreModal();
-      renderGrid();
-      setTimeout(checkWinCondition, 100);
-    }
-
-    function checkWinCondition() {
-      for (const pid in state.scores) {
-        if (hasServidaWin(pid)) {
-          handleVictory(pid);
-          return;
-        }
-      }
-
-      if (!state.players.length) return;
-      const activeCats = getActiveCategories();
-      const allFull = state.players.every((p) => {
-        const pScores = state.scores[p.id] || {};
-        return activeCats.every((cat) => pScores[cat.id] !== undefined);
-      });
-
-      if (!allFull) return;
-
-      let highest = -1;
-      let winnerId = null;
-      for (const p of state.players) {
-        const total = calculateTotal(p.id);
-        if (total > highest) {
-          highest = total;
-          winnerId = p.id;
-        }
-      }
-      if (winnerId) handleVictory(winnerId);
-    }
-
-    function handleVictory(winnerId, playAudio = true) {
-      state.isGameOver = true;
-      state.winnerId = winnerId;
-      saveState();
-
-      const winner = state.players.find((p) => p.id === winnerId);
-      if (!winner) return;
-
-      $('victory-emoji').textContent = winner.emoji;
-      $('victory-score').textContent = hasServidaWin(winnerId) ? '¡Generala Servida!' : `${calculateTotal(winnerId)} pts`;
-
-      if (playAudio && state.settings.shouldPlayWinnerAudio) {
-        try {
-          clearInterval(audioFadeInterval);
-          winnerSound.volume = 1;
-          winnerSound.currentTime = 0;
-          winnerSound.play()?.catch?.(() => {});
-        } catch {}
-      }
-
-      const rankingContainer = $('victory-ranking');
-      const rankings = state.players
-        .map((p, index) => ({
-          emoji: p.emoji,
-          name: getPlayerDisplayName(p, index),
-          total: calculateTotal(p.id),
-          isWinner: p.id === winnerId,
-          servida: hasServidaWin(p.id)
-        }))
-        .sort((a, b) => (a.servida !== b.servida ? (a.servida ? -1 : 1) : b.total - a.total));
-
-      rankingContainer.innerHTML = rankings.length <= 1
-        ? '<div class="text-center text-gray-500 py-2">Sin oponentes</div>'
-        : rankings.map((r, index) => `
-            <div class="flex justify-between items-center p-2 rounded min-w-0 ${r.isWinner ? 'bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-400/40' : 'bg-white dark:bg-gray-800'}">
-              <span class="text-gray-600 dark:text-gray-300 min-w-0 truncate flex items-center gap-2">
-                <span class="font-semibold">${index + 1}º</span>
-                <span class="text-xl">${r.emoji}</span>
-                <span class="font-medium text-gray-800 dark:text-gray-200">${r.name}</span>
-              </span>
-              <span class="font-bold text-gray-800 dark:text-gray-200 min-w-0 truncate text-right">${r.servida ? 'Servida' : r.total}</span>
-            </div>
-          `).join('');
-
-      $('victory-modal').classList.remove('hidden');
-    }
-
-    function closeVictoryModal() {
-      $('victory-modal').classList.add('hidden');
-      fadeOutWinnerAudio();
-    }
-
-    const closeVictoryAndViewBoard = () => closeVictoryModal();
-
-    document.addEventListener('DOMContentLoaded', loadState);
-  </script>
+<main class="flex-1"><div id="board-scroll" class="board-scroll h-full"><div id="game-grid" class="p-2 grid-layout"></div></div></main>
+
+<div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 modal-overlay hidden" onclick="closeSettings()">
+<div class="bg-surface-light dark:bg-surface-dark w-11/12 max-w-md rounded-xl shadow-2xl flex flex-col max-h-[90vh] modal-content" onclick="event.stopPropagation()">
+<div class="p-2 border-b border-gray-300 dark:border-gray-700 flex justify-center items-center"><h2 class="text-xl font-bold">Ajustes</h2></div>
+<div class="p-4 overflow-y-auto flex-1 space-y-4">
+<section class="rounded-xl border border-gray-200 bg-white/80 p-3 shadow-sm dark:border-gray-700 dark:bg-[#232323]/90">
+<div class="mb-3 border-b border-gray-200 pb-2 dark:border-gray-700"><h3 class="text-sm font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">Jugadores</h3></div>
+<button id="add-player-btn" onclick="addRandomPlayer()" class="mb-3 flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 py-2 text-sm font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600"><span class="material-symbols-outlined font-bold text-lg">add</span><span class="text-center">Agregar un Jugador</span></button>
+<div id="players-list" class="space-y-2"></div>
+</section>
+<section class="rounded-xl border border-gray-200 bg-white/80 p-3 shadow-sm dark:border-gray-700 dark:bg-[#232323]/90">
+<div class="mb-3 border-b border-gray-200 pb-2 dark:border-gray-700"><h3 class="text-sm font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Apariencia</h3></div>
+<div class="space-y-2">
+<label id="fullscreen" onclick="toggleFullscreen()" class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none"><div><p class="font-medium">Conmutar Pantalla Completa</p></div></label>
+<label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none"><div><p class="font-medium">Modo Oscuro</p></div><div class="relative inline-flex items-center"><input type="checkbox" id="toggle-dark-mode" class="sr-only peer" onchange="toggleTheme(this.checked)"><div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div></div></label>
+<label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none"><div><p class="font-medium">Sonido de Victoria</p><p class="text-xs text-gray-500 dark:text-gray-400">Reproducir audio al ganar</p></div><div class="relative inline-flex items-center"><input type="checkbox" id="toggle-audio" class="sr-only peer" onchange="toggleAudio(this.checked)"><div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div></div></label>
+</div>
+</section>
+<section class="rounded-xl border border-gray-200 bg-white/80 p-3 shadow-sm dark:border-gray-700 dark:bg-[#232323]/90">
+<div class="mb-3 border-b border-gray-200 pb-2 dark:border-gray-700"><h3 class="text-sm font-black uppercase tracking-widest text-violet-600 dark:text-violet-400">Reglas</h3></div>
+<div class="space-y-2">
+<label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none"><div><p class="font-medium">Doble Par</p><p class="text-xs text-gray-500 dark:text-gray-400">Habilitar categoría adicional</p></div><div class="relative inline-flex items-center"><input type="checkbox" id="toggle-doble-pareja" class="sr-only peer" onchange="toggleDoblePar(this.checked)"><div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div></div></label>
+<label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none"><div><p class="font-medium">Tercia</p><p class="text-xs text-gray-500 dark:text-gray-400">Habilitar categoría adicional</p></div><div class="relative inline-flex items-center"><input type="checkbox" id="toggle-tercia" class="sr-only peer" onchange="toggleTercia(this.checked)"><div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div></div></label>
+<label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none"><div><p class="font-medium">Generala Servida</p><p class="text-xs text-gray-500 dark:text-gray-400">Habilitar la opción de Generala Servida (gana)</p></div><div class="relative inline-flex items-center"><input type="checkbox" id="toggle-generala-servida" class="sr-only peer" onchange="toggleGeneralaServida(this.checked)"><div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div></div></label>
+<label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none"><div><p class="font-medium">Generala Real</p><p class="text-xs text-gray-500 dark:text-gray-400">Habilitar la opción Generala Real (armada con los 1)</p></div><div class="relative inline-flex items-center"><input type="checkbox" id="toggle-generala-real" class="sr-only peer" onchange="toggleGeneralaReal(this.checked)"><div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div></div></label>
+<label class="flex items-center justify-between p-3 bg-gray-100 dark:bg-[#2a2a2a] rounded-lg cursor-pointer select-none"><div><p class="font-medium">Doble Generala</p><p class="text-xs text-gray-500 dark:text-gray-400">Habilitar la opción Doble Generala o Segunda Generala</p></div><div class="relative inline-flex items-center"><input type="checkbox" id="toggle-doble-generala" class="sr-only peer" onchange="toggleDobleGenerala(this.checked)"><div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500"></div></div></label>
+</div>
+</section>
+</div>
+<div class="p-4 border-t border-gray-300 dark:border-gray-700 flex gap-3">
+<button id="reset-btn" onclick="restartIfAllowed()" class="flex-1 flex justify-center gap-2 bg-gray-300 dark:bg-gray-700 text-gray-500 p-3 rounded-lg font-medium transition"><span class="material-symbols-outlined">delete</span>Borrar Partida</button>
+<button id="continue-btn" onclick="closeSettings()" class="flex-1 flex justify-center gap-2 bg-gray-300 dark:bg-gray-700 text-gray-500 p-3 rounded-lg font-medium transition"><span class="material-symbols-outlined">play_arrow</span>Continuar</button>
+</div>
+</div>
+</div>
+
+<div id="score-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 modal-overlay hidden" onclick="closeScoreModal()">
+<div class="bg-surface-light dark:bg-surface-dark w-10/12 max-w-sm rounded-xl shadow-2xl flex flex-col modal-content" onclick="event.stopPropagation()">
+<div class="p-5 border-b border-gray-300 dark:border-gray-700"><h2 id="score-modal-title" class="text-lg font-normal text-center">Indicar puntaje</h2></div>
+<div id="score-options" class="flex flex-col items-center max-h-[50vh] overflow-y-auto"></div>
+<div class="flex justify-center border-t border-gray-300 dark:border-gray-700">
+<button id="btn-delete-score" onclick="deleteCurrentScore()" class="w-full p-3 text-red-500 hover:bg-red-500/10 font-bold rounded transition hidden">BORRAR</button>
+<button onclick="closeScoreModal()" class="w-full p-3 text-blue-500 hover:bg-blue-500/20 font-bold rounded transition">CANCELAR</button>
+</div>
+</div>
+</div>
+
+<div id="emoji-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 modal-overlay hidden" onclick="closePlayerEditor()">
+<div class="bg-surface-light dark:bg-surface-dark w-11/12 max-w-sm rounded-xl shadow-2xl flex flex-col modal-content" onclick="event.stopPropagation()">
+<h3 class="text-lg font-bold pt-4 text-center">Editar jugador</h3>
+<input id="player-name-input" type="text" maxlength="50" class="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#1f1f1f] mx-4 p-2 mb-3 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe un nombre">
+<p class="text-sm text-center text-gray-500 dark:text-gray-400 mb-1 border-b border-gray-300 dark:border-gray-700">Elige un avatar</p>
+<div class="grid grid-cols-6 gap-1 max-h-[50vh] overflow-y-auto p-1" id="emoji-grid"></div>
+<div class="flex justify-center border-t border-gray-300 dark:border-gray-700">
+<button type="button" onclick="closePlayerEditor()" class="flex-1 py-3 text-lg text-gray-500 hover:bg-gray-500/20 transition">Cancelar</button>
+<button id="accept-player-editor-btn" type="button" class="flex-1 py-3 text-lg text-blue-500 hover:bg-blue-500/20 transition font-medium">Aceptar</button>
+</div>
+</div>
+</div>
+
+<div id="victory-modal" class="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-md hidden modal-overlay" onclick="closeVictoryModal()">
+<div class="bg-surface-light dark:bg-surface-dark w-11/12 max-w-md max-h-[90vh] rounded-2xl shadow-2xl p-6 flex flex-col items-center modal-content border border-yellow-500/30 overflow-hidden" onclick="event.stopPropagation()">
+<div class="text-5xl mb-3 animate-bounce">🏆</div>
+<h2 class="text-2xl font-bold text-center mb-2 text-yellow-500" id="victory-title">¡Ganador!</h2>
+<div class="text-4xl my-3" id="victory-emoji">🐫</div>
+<p class="text-xl font-bold mb-4" id="victory-score">150 pts</p>
+<div class="w-full bg-gray-100 dark:bg-[#2a2a2a] rounded-xl p-4 mb-4 shadow-inner min-h-0 flex flex-col">
+<h4 class="text-xs text-center text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">Clasificación</h4>
+<div id="victory-ranking" class="space-y-2 text-sm font-medium max-h-[40vh] overflow-y-auto overflow-x-hidden pr-3 min-w-0"></div>
+</div>
+<div class="flex gap-3 w-full mt-auto relative z-10">
+<button onclick="closeVictoryAndViewBoard()" class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-3 rounded-xl font-medium transition">Ver Tablero</button>
+<button onclick="restartGame()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-medium transition shadow-lg">Nueva Partida</button>
+</div>
+</div>
+</div>
+
+<script>
+const STORAGE_KEY="generala_state",SERVIDA_CATS={generala:50,generalareal:60,doblegenerala:100},SERVIDA_IDS=Object.keys(SERVIDA_CATS);
+const DEFAULT_STATE={players:[],scores:{},settings:{doblePareja:false,tercia:false,generalaServida:true,generalaReal:false,dobleGenerala:true,darkMode:true,shouldPlayWinnerAudio:true},isGameOver:false,winnerId:null,currentPlayerId:null};
+const CATEGORIES=[{id:"1",label:"1",fullLabel:"Uno",type:"num",mult:1},{id:"2",label:"2",fullLabel:"Dos",type:"num",mult:2},{id:"3",label:"3",fullLabel:"Tres",type:"num",mult:3},{id:"4",label:"4",fullLabel:"Cuatro",type:"num",mult:4},{id:"5",label:"5",fullLabel:"Cinco",type:"num",mult:5},{id:"6",label:"6",fullLabel:"Seis",type:"num",mult:6},{id:"doblepareja",label:"DP",fullLabel:"Doble Par",type:"fixed",options:[5,10],settingKey:"doblePareja"},{id:"tercia",label:"T",fullLabel:"Tercia",type:"fixed",options:[10,15],settingKey:"tercia"},{id:"escalera",label:"E",fullLabel:"Escalera",type:"fixed",options:[20,25]},{id:"full",label:"F",fullLabel:"Full",type:"fixed",options:[30,35]},{id:"poker",label:"P",fullLabel:"Póker",type:"fixed",options:[40,45]},{id:"generala",label:"G",fullLabel:"Generala",type:"fixed",options:[50,"W"]},{id:"generalareal",label:"GR",fullLabel:"Generala Real",type:"fixed",options:[60,"W"],settingKey:"generalaReal"},{id:"doblegenerala",label:"DG",fullLabel:"Doble Generala",type:"fixed",options:[100,"W"],settingKey:"dobleGenerala"}];
+const EMOJIS=["🐵","🐒","🦍","🦧","🐶","🐕","🦮","🐕‍🦺","🐩","🐺","🦊","🦝","🐱","🐈","🐈‍⬛","🦁","🐯","🐅","🐆","🐴","🫎","🫏","🐎","🦄","🦓","🦌","🦬","🐮","🐂","🐃","🐄","🐷","🐖","🐗","🐽","🐏","🐑","🐐","🐪","🐫","🦙","🦒","🐘","🦣","🦏","🦛","🐭","🐁","🐀","🐹","🐰","🐇","🐿️","🦫","🦔","🦇","🐻","🐻‍❄️","🐨","🐼","🦥","🦦","🦨","🦘","🦡","🐾","🦃","🐔","🐓","🐣","🐤","🐥","🐦","🐧","🕊️","🦅","🦆","🦢","🦉","🦤","🪶","🦩","🦚","🦜","🪽","🐦‍⬛","🪿","🐦‍🔥","🪹","🐸","🐊","🐢","🦎","🐍","🐲","🐉","🦕","🦖","🐳","🐋","🐬","🫍","🦭","🐟","🐠","🐡","🦈","🐙","🐚","🪸","🪼","🦀","🦞","🦐","🦑","🐌","🦋","🐛","🐜","🐝","🪲","🐞","🦗","🪳","🕷️","🕸️","🦂","🦟","🪰","🪱","💐","🌸","💮","🪷","🏵️","🌹","🥀","🌺","🌻","🌼","🌷","🪻","🌱","🪴","🌲","🌳","🌴","🌵","🌾","🌿","☘️","🍀","🍁","🍂","🍃","🍄","🪾","🪨","🪵","🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘","🌙","🌚","🌛","🌜","☀️","🌝","🌞","🪐","⭐","🌟","🌠","🌌","☁️","⛅","⛈️","🌤️","🌥️","🌦️","🌧️","🌨️","🌩️","🌪️","🌫️","🌬️","🌀","🌈","🌂","☂️","☔","⛱️","⚡","❄️","☃️","⛄","☄️","🔥","💧","🌊"];
+const WINNERSOUND=new Audio("https://generala-scorer.vercel.app/win3.mp3");
+
+let state=structuredClone(DEFAULT_STATE);
+let currentEditing={playerId:null,catId:null};
+let editingPlayerId=null;
+let editingPlayerDraft={emoji:null,name:""};
+let audioFadeInterval=null;
+
+const $=id=>document.getElementById(id);
+const escapeHtml=str=>String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const getRandomEmoji=()=>EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+const getPlayerDisplayName=(player,index)=>player.name?.trim()||`Jugador ${index+1}`;
+const saveState=()=>localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+
+document.addEventListener("contextmenu",e=>{if(!e.target.closest("input,textarea,[contenteditable='true']"))e.preventDefault()},{passive:false});
+
+function initTouchTapSupport(){
+const TAP_THRESHOLD=12,activePointers=new Map();
+let suppressNativeClick=false,suppressTimer=null;
+
+const armClickSuppression=()=>{
+suppressNativeClick=true;
+clearTimeout(suppressTimer);
+suppressTimer=setTimeout(()=>{suppressNativeClick=false},500);
+};
+
+const runClickableAction=clickable=>{
+if(!clickable)return;
+const onclickAttr=clickable.getAttribute?.("onclick");
+if(onclickAttr){
+new Function("event",onclickAttr).call(clickable,new MouseEvent("click",{bubbles:true,cancelable:true,view:window}));
+return;
+}
+clickable.click?.();
+};
+
+document.addEventListener("click",e=>{
+if(suppressNativeClick&&e.isTrusted){
+suppressNativeClick=false;
+clearTimeout(suppressTimer);
+e.stopImmediatePropagation();
+e.preventDefault();
+}
+},true);
+
+document.addEventListener("pointerdown",e=>{
+if(e.pointerType!=="touch"||!e.isPrimary)return;
+const target=e.target instanceof Element?e.target:e.target?.parentElement;
+if(!target||target.closest("input,textarea,select,label,[contenteditable='true']"))return;
+activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY,moved:false,target});
+},{passive:true,capture:true});
+
+document.addEventListener("pointermove",e=>{
+if(e.pointerType!=="touch")return;
+const entry=activePointers.get(e.pointerId);
+if(entry&&Math.hypot(e.clientX-entry.x,e.clientY-entry.y)>TAP_THRESHOLD)entry.moved=true;
+},{passive:true,capture:true});
+
+const finishTouchPointer=e=>{
+if(e.pointerType!=="touch")return;
+const entry=activePointers.get(e.pointerId);
+activePointers.delete(e.pointerId);
+if(!entry||entry.moved)return;
+const clickable=entry.target?.closest("[onclick],button,[role='button']");
+if(!clickable)return;
+armClickSuppression();
+runClickableAction(clickable);
+};
+
+document.addEventListener("pointerup",finishTouchPointer,{passive:true,capture:true});
+document.addEventListener("pointercancel",e=>{activePointers.delete(e.pointerId)},{passive:true,capture:true});
+}
+
+function fadeOutWinnerAudio(){
+if(!WINNERSOUND||WINNERSOUND.paused)return;
+clearInterval(audioFadeInterval);
+const steps=20,stepTime=20,volStep=WINNERSOUND.volume/steps;
+audioFadeInterval=setInterval(()=>{
+if(WINNERSOUND.volume>volStep){WINNERSOUND.volume-=volStep}
+else{clearInterval(audioFadeInterval);WINNERSOUND.pause();WINNERSOUND.currentTime=0;WINNERSOUND.volume=1}
+},stepTime);
+}
+
+function toggleAudio(isEnabled){state.settings.shouldPlayWinnerAudio=isEnabled;saveState()}
+
+function toggleFullscreen(){
+const fsEl=document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement;
+if(fsEl){
+(document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen)?.call(document);
+}else{
+const el=document.documentElement;
+(el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen||el.msRequestFullscreen)?.call(el).catch(e=>console.warn("Fullscreen no disponible:",e));
+}
+}
+
+function loadState(){
+const saved=localStorage.getItem(STORAGE_KEY);
+if(saved){
+try{
+const parsed=JSON.parse(saved);
+const s={...DEFAULT_STATE.settings,...(parsed.settings||{})};
+if(s.dobleGeneralaServida!==undefined&&parsed.settings?.generalaServida===undefined)s.generalaServida=s.dobleGeneralaServida;
+delete s.dobleGeneralaServida;
+state={...structuredClone(DEFAULT_STATE),...parsed,settings:s};
+}catch{state=structuredClone(DEFAULT_STATE)}
+}else{
+state.settings.darkMode=Boolean(window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+}
+applySettings();applyTheme();ensureCurrentPlayer();
+if(!state.players.length){openSettings()}
+else{renderGrid();if(state.isGameOver&&state.winnerId)handleVictory(state.winnerId,false)}
+}
+
+function ensureCurrentPlayer(){
+if(!state.players.length){state.currentPlayerId=null;return}
+if(!state.currentPlayerId||!state.players.some(p=>p.id===state.currentPlayerId))state.currentPlayerId=state.players[0].id;
+}
+
+function advanceTurn(){
+if(!state.players.length){state.currentPlayerId=null;return}
+const idx=state.players.findIndex(p=>p.id===state.currentPlayerId);
+state.currentPlayerId=state.players[idx>=0?(idx+1)%state.players.length:0].id;
+}
+
+function applyTheme(){
+document.documentElement.classList.toggle("dark",Boolean(state.settings.darkMode));
+$("toggle-dark-mode").checked=Boolean(state.settings.darkMode);
+}
+
+function applySettings(){
+for(const[catId,baseScore]of Object.entries(SERVIDA_CATS)){
+const cat=CATEGORIES.find(c=>c.id===catId);
+if(cat)cat.options=state.settings.generalaServida?[baseScore,"W"]:[baseScore];
+}
+}
+
+function toggleTheme(isDark){state.settings.darkMode=isDark;applyTheme();saveState()}
+
+function toggleCategorySetting(settingKey,scoreKey,isEnabled){
+state.settings[settingKey]=isEnabled;
+if(!isEnabled){for(const pid in state.scores)delete state.scores[pid]?.[scoreKey]}
+saveState();renderGrid();
+}
+
+const toggleDoblePar=v=>toggleCategorySetting("doblePareja","doblepareja",v);
+const toggleTercia=v=>toggleCategorySetting("tercia","tercia",v);
+const toggleGeneralaReal=v=>toggleCategorySetting("generalaReal","generalareal",v);
+const toggleDobleGenerala=v=>toggleCategorySetting("dobleGenerala","doblegenerala",v);
+
+function toggleGeneralaServida(isEnabled){
+state.settings.generalaServida=isEnabled;
+applySettings();
+if(!isEnabled){
+for(const pid in state.scores){
+const pScores=state.scores[pid];
+if(!pScores)continue;
+for(const catId of SERVIDA_IDS){if(pScores[catId]==="W")delete pScores[catId]}
+}
+}
+saveState();renderGrid();
+}
+
+function openSettings(){
+$("toggle-doble-pareja").checked=state.settings.doblePareja;
+$("toggle-tercia").checked=state.settings.tercia;
+$("toggle-generala-servida").checked=state.settings.generalaServida;
+$("toggle-generala-real").checked=state.settings.generalaReal;
+$("toggle-doble-generala").checked=state.settings.dobleGenerala;
+$("toggle-audio").checked=state.settings.shouldPlayWinnerAudio;
+renderPlayersList();
+$("settings-modal").classList.remove("hidden");
+updateSettingsButtonsState();
+}
+
+function closeSettings(){
+$("settings-modal").classList.add("hidden");
+if(!state.players.length){openSettings();$("add-player-btn")?.focus()}
+else{renderGrid()}
+}
+
+function renderPlayersList(){
+const list=$("players-list");
+if(!state.players.length){
+list.innerHTML='<p class="font-medium text-center py-4">No hay jugadores.<br><br>Para jugar necesitas al menos uno.<br><br>Pulsa el botón verde que está arriba para<br>agregar jugadores.</p>';
+updateSettingsButtonsState();
+return;
+}
+list.innerHTML=state.players.map((p,i)=>`
+<div class="flex items-center bg-gray-100 dark:bg-[#2a2a2a] rounded-lg overflow-hidden">
+<button type="button" onclick="editPlayer('${p.id}')" class="flex-1 flex items-center justify-between gap-3 px-4 py-2 text-left text-gray-700 dark:text-gray-200 rounded-lg hover:bg-blue-500 hover:text-white transition">
+<div class="flex items-center gap-3"><span class="text-2xl">${p.emoji}</span><span class="font-medium text-sm">${escapeHtml(getPlayerDisplayName(p,i))}</span></div>
+<span class="material-symbols-outlined text-lg font-medium">edit</span>
+</button>
+<div class="flex items-center">
+<button type="button" onclick="event.stopPropagation();movePlayer(${i},-1)" class="py-2 px-3 text-gray-500 hover:text-white hover:bg-gray-600 rounded transition"><span class="material-symbols-outlined text-lg font-bold">arrow_upward</span></button>
+<button type="button" onclick="event.stopPropagation();movePlayer(${i},1)" class="py-2 px-3 text-gray-500 hover:text-white hover:bg-gray-600 rounded transition"><span class="material-symbols-outlined text-lg font-bold">arrow_downward</span></button>
+<button type="button" onclick="event.stopPropagation();removePlayer('${p.id}')" class="py-2 px-3 text-red-500 hover:bg-red-500/20 rounded transition"><span class="material-symbols-outlined text-xl font-medium">delete</span></button>
+</div>
+</div>`).join("");
+updateSettingsButtonsState();
+}
+
+function movePlayer(index,dir){
+const target=index+dir;
+if(target<0||target>=state.players.length)return;
+[state.players[index],state.players[target]]=[state.players[target],state.players[index]];
+saveState();renderPlayersList();
+}
+
+function removePlayer(id){
+state.players=state.players.filter(p=>p.id!==id);
+delete state.scores[id];
+ensureCurrentPlayer();
+saveState();renderPlayersList();
+}
+
+function editPlayer(id){
+const player=state.players.find(p=>p.id===id);
+if(player)openPlayerEditor(player.id,player.emoji,player.name);
+}
+
+function renderPlayerEditorGrid(){
+const grid=$("emoji-grid");
+const selectedEmoji=editingPlayerDraft.emoji||getRandomEmoji();
+const frag=document.createDocumentFragment();
+let activeBtn=null;
+
+for(const emoji of EMOJIS){
+const btn=document.createElement("button");
+btn.type="button";
+btn.className="text-3xl p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition transform active:scale-95";
+btn.textContent=emoji;
+if(emoji===selectedEmoji){btn.classList.add("ring-2","ring-blue-500");activeBtn=btn}
+btn.onclick=()=>{editingPlayerDraft.emoji=emoji;renderPlayerEditorGrid()};
+frag.appendChild(btn);
+}
+grid.replaceChildren(frag);
+if(activeBtn)requestAnimationFrame(()=>activeBtn.scrollIntoView({block:"center",behavior:"smooth"}));
+}
+
+function openPlayerEditor(playerId=null,selectedEmoji=null,initialName=""){
+editingPlayerId=playerId;
+editingPlayerDraft={emoji:selectedEmoji||getRandomEmoji(),name:initialName||""};
+const nameInput=$("player-name-input");
+nameInput.value=editingPlayerDraft.name;
+renderPlayerEditorGrid();
+$("emoji-modal").classList.remove("hidden");
+
+$("accept-player-editor-btn").onclick=()=>{
+const draftName=nameInput.value.trim();
+const resolvedEmoji=editingPlayerDraft.emoji||getRandomEmoji();
+if(editingPlayerId){
+const player=state.players.find(p=>p.id===editingPlayerId);
+if(player){player.emoji=resolvedEmoji;player.name=draftName;saveState();renderPlayersList();renderGrid()}
+}else{addPlayer(resolvedEmoji,draftName)}
+closePlayerEditor();
+};
+
+requestAnimationFrame(()=>{nameInput.focus();nameInput.select()});
+}
+
+function closePlayerEditor(){
+$("emoji-modal").classList.add("hidden");
+editingPlayerId=null;
+editingPlayerDraft={emoji:null,name:""};
+}
+
+function addPlayer(emoji,name=""){
+const id=`p_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+state.players.push({id,emoji,name:name?.trim()||""});
+state.scores[id]??={};
+ensureCurrentPlayer();
+saveState();renderPlayersList();renderGrid();
+}
+
+const addRandomPlayer=()=>addPlayer(getRandomEmoji(),"");
+const hasAnyRecordedScore=()=>state.players.some(p=>Object.keys(state.scores[p.id]||{}).length>0);
+
+function restartIfAllowed(){
+if(!state.players.length||!hasAnyRecordedScore()){openSettings();renderPlayersList();$("add-player-btn")?.focus();return}
+restartGame();closeSettings();
+}
+
+function updateSettingsButtonsState(){
+const resetBtn=$("reset-btn"),continueBtn=$("continue-btn"),settingsBtn=$("settings-button");
+const hasPlayers=state.players.length>0,hasScores=hasAnyRecordedScore();
+if(resetBtn){
+const active=hasPlayers&&hasScores;
+resetBtn.disabled=!active;
+resetBtn.className=active?"flex-1 flex justify-center gap-2 bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-600 text-white p-3 rounded-lg font-medium transition":"flex-1 flex justify-center gap-2 bg-gray-300 dark:bg-gray-700 text-gray-500 p-3 rounded-lg font-medium transition cursor-not-allowed";
+}
+if(continueBtn){
+continueBtn.disabled=!hasPlayers;
+continueBtn.className=hasPlayers?"flex-1 flex justify-center gap-2 bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-600 text-white p-3 rounded-lg font-medium transition":"flex-1 flex justify-center gap-2 bg-gray-300 dark:bg-gray-700 text-gray-500 p-3 rounded-lg font-medium transition cursor-not-allowed";
+}
+settingsBtn?.classList.toggle("text-gray-400",!hasPlayers);
+}
+
+function restartGame(){
+for(const pid in state.scores)state.scores[pid]={};
+state.isGameOver=false;state.winnerId=null;
+state.currentPlayerId=state.players[0]?.id||null;
+saveState();closeVictoryModal();renderGrid();
+}
+
+const calculateTotal=playerId=>Object.values(state.scores[playerId]||{}).reduce((sum,v)=>typeof v==="number"?sum+v:sum,0);
+const hasServidaWin=playerId=>SERVIDA_IDS.some(catId=>state.scores[playerId]?.[catId]==="W");
+
+const getActiveCategories=()=>CATEGORIES.filter(cat=>cat.settingKey?Boolean(state.settings[cat.settingKey]):true);
+const isCategoryAvailableForPlayer=(playerId,catId)=>Boolean(playerId&&catId&&state.scores[playerId]?.[catId]===undefined);
+
+function openCategoryForCurrentPlayer(catId){
+if(state.currentPlayerId&&!state.isGameOver)openScoreModal(state.currentPlayerId,catId);
+}
+
+function renderGrid(){
+const gridContainer=$("game-grid");
+const activeCats=getActiveCategories();
+gridContainer.style.gridTemplateColumns=`64px repeat(${state.players.length},minmax(64px,1fr))`;
+
+const settingsDisabled=!state.players.length;
+const settingsHeaderClass=settingsDisabled
+?"sticky-corner bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 text-gray-400 cursor-pointer transition"
+:"sticky-corner bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition";
+
+let html=`<div id="settings-button" class="${settingsHeaderClass}" role="button" tabindex="0" onclick="openSettings()"><span class="material-symbols-outlined ${settingsDisabled?"text-gray-400":"text-gray-600 dark:text-gray-300"} text-3xl">settings</span></div>`;
+
+for(const p of state.players){
+const isCurrent=p.id===state.currentPlayerId;
+html+=`<div class="sticky-header bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 cursor-pointer ${isCurrent?"current-player-header":""}" role="button" tabindex="0" onclick="event.stopPropagation();editPlayer('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();editPlayer('${p.id}')}"><span class="text-3xl">${p.emoji}</span>${isCurrent?'<span class="absolute top-1 right-2 text-sm text-blue-600 dark:text-blue-400">●</span>':""}</div>`;
+}
+
+for(const cat of activeCats){
+const isPlayable=Boolean(state.currentPlayerId)&&isCategoryAvailableForPlayer(state.currentPlayerId,cat.id);
+const catStyle=isPlayable?' style="background-image:linear-gradient(135deg,rgba(96,165,250,.18),rgba(59,130,246,.06))"':"";
+const catClass=`sticky-col bg-surface-light dark:bg-surface-dark flex items-center justify-center p-2 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 no-select cursor-pointer transition ${isPlayable?"hover:bg-blue-100 dark:hover:bg-blue-900":"hover:bg-gray-200 dark:hover:bg-gray-700"}`;
+html+=`<div class="${catClass}"${catStyle} onclick="openCategoryForCurrentPlayer('${cat.id}')"><span class="text-lg font-bold text-gray-700 dark:text-gray-300">${cat.label}</span>${isPlayable?'<span class="absolute top-1 right-2 text-sm text-blue-600 dark:text-blue-400">●</span>':""}</div>`;
+
+for(const p of state.players){
+const score=state.scores[p.id]?.[cat.id];
+const isCurrent=p.id===state.currentPlayerId;
+let cellClass=`relative bg-cell-light dark:bg-cell-dark text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 hover:opacity-80 transition cursor-pointer flex items-center justify-center rounded-lg shadow-sm font-bold text-lg ${isCurrent?"current-player-cell":""}`;
+let displayScore="-";
+
+if(score!==undefined){
+if(score==="T"){displayScore="/";cellClass="relative bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-600 text-white border-red-700 dark:border-red-800 cursor-pointer flex items-center justify-center rounded-lg shadow-sm font-bold text-lg"}
+else if(score==="W"){displayScore="GANÓ";cellClass="relative bg-yellow-500 dark:bg-yellow-600 text-black border-yellow-600 cursor-pointer flex items-center justify-center rounded-lg shadow-sm font-bold text-lg"}
+else{displayScore=score;cellClass="relative bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-600 text-white border-green-700 dark:border-green-800 cursor-pointer flex items-center justify-center rounded-lg shadow-sm font-bold text-lg"}
+}
+html+=`<div class="${cellClass} no-select" onclick="openScoreModal('${p.id}','${cat.id}')">${displayScore}</div>`;
+}
+}
+
+html+=`<div class="sticky-col bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 mt-2"><span class="text-lg font-bold text-gray-800 dark:text-gray-100">Total</span></div>`;
+for(const p of state.players){
+const isCurrent=p.id===state.currentPlayerId;
+html+=`<div class="bg-surface-light dark:bg-surface-dark flex items-center justify-center p-3 rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 mt-2 ${isCurrent?"current-player-cell":""}"><span class="text-lg font-bold text-gray-800 dark:text-gray-100">${calculateTotal(p.id)}</span></div>`;
+}
+
+gridContainer.innerHTML=html;
+updateSettingsButtonsState();
+}
+
+function openScoreModal(playerId,catId){
+if(state.isGameOver)return;
+state.currentPlayerId=playerId;
+saveState();
+currentEditing={playerId,catId};
+
+const player=state.players.find(p=>p.id===playerId);
+const cat=CATEGORIES.find(c=>c.id===catId);
+state.scores[playerId]??={};
+const currentScore=state.scores[playerId][catId];
+
+$("score-modal-title").innerHTML=`<span class="text-2xl align-middle mx-1">${player.emoji}</span> ${cat.fullLabel}`;
+
+const options=[{label:"TACHA",value:"T"}];
+if(cat.type==="num"){
+for(let i=1;i<=5;i++){const val=cat.mult*i;options.push({label:String(val),value:val})}
+}else if(cat.type==="fixed"){
+for(const opt of cat.options)options.push({label:opt==="W"?"SERVIDA (GANA)":String(opt),value:opt});
+}
+
+const optionsContainer=$("score-options");
+const frag=document.createDocumentFragment();
+for(const opt of options){
+const btn=document.createElement("button");
+btn.type="button";
+btn.className="w-full py-3 text-lg text-blue-500 hover:bg-blue-500/20 hover:bg-gray-100 dark:hover:bg-gray-800 transition rounded-lg font-bold";
+btn.textContent=opt.label;
+btn.onclick=()=>submitScore(opt.value);
+frag.appendChild(btn);
+}
+optionsContainer.replaceChildren(frag);
+$("btn-delete-score").classList.toggle("hidden",currentScore===undefined);
+$("score-modal").classList.remove("hidden");
+}
+
+function closeScoreModal(){$("score-modal").classList.add("hidden");currentEditing={playerId:null,catId:null}}
+
+function deleteCurrentScore(){
+const{playerId,catId}=currentEditing;
+if(playerId&&catId){delete state.scores[playerId]?.[catId];saveState();renderGrid();closeScoreModal()}
+}
+
+function submitScore(value){
+const{playerId,catId}=currentEditing;
+state.scores[playerId]??={};
+state.scores[playerId][catId]=value;
+advanceTurn();saveState();closeScoreModal();renderGrid();
+setTimeout(checkWinCondition,100);
+}
+
+function checkWinCondition(){
+for(const pid in state.scores){
+if(hasServidaWin(pid)){handleVictory(pid);return}
+}
+const activeCats=getActiveCategories();
+if(!state.players.length||!activeCats.length)return;
+
+const allFull=state.players.every(p=>{
+const pScores=state.scores[p.id]||{};
+return activeCats.every(cat=>pScores[cat.id]!==undefined);
+});
+
+if(allFull){
+let highest=-1,winnerId=null;
+for(const p of state.players){
+const total=calculateTotal(p.id);
+if(total>highest){highest=total;winnerId=p.id}
+}
+if(winnerId)handleVictory(winnerId);
+}
+}
+
+function handleVictory(winnerId,playAudio=true){
+state.isGameOver=true;state.winnerId=winnerId;saveState();
+const winner=state.players.find(p=>p.id===winnerId);
+if(!winner)return;
+
+$("victory-emoji").textContent=winner.emoji;
+$("victory-score").textContent=hasServidaWin(winnerId)?"¡Generala Servida!":`${calculateTotal(winnerId)} pts`;
+
+if(playAudio&&state.settings.shouldPlayWinnerAudio){
+clearInterval(audioFadeInterval);
+WINNERSOUND.volume=1;WINNERSOUND.currentTime=0;
+WINNERSOUND.play().catch(err=>console.log("Audio bloqueado por el navegador:",err));
+}
+
+const rankingContainer=$("victory-ranking");
+const rankings=state.players.map((p,i)=>({
+emoji:p.emoji,id:p.id,name:getPlayerDisplayName(p,i),
+total:calculateTotal(p.id),isWinner:p.id===winnerId,servida:hasServidaWin(p.id)
+})).sort((a,b)=>(b.servida-a.servida)||(b.total-a.total));
+
+if(rankings.length<=1){
+rankingContainer.innerHTML='<div class="text-center text-gray-500 py-2">Sin oponentes</div>';
+}else{
+rankingContainer.innerHTML=rankings.map((r,i)=>`
+<div class="flex justify-between items-center p-2 rounded min-w-0 ${r.isWinner?"bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-400/40":"bg-white dark:bg-gray-800"}">
+<span class="text-gray-600 dark:text-gray-300 min-w-0 truncate flex items-center gap-2"><span class="font-semibold">${i+1}º</span><span class="text-xl">${r.emoji}</span><span class="font-medium text-gray-800 dark:text-gray-200">${escapeHtml(r.name)}</span></span>
+<span class="font-bold text-gray-800 dark:text-gray-200 min-w-0 truncate text-right">${r.servida?"Servida":r.total}</span>
+</div>`).join("");
+}
+
+$("victory-modal").classList.remove("hidden");
+}
+
+function closeVictoryModal(){$("victory-modal").classList.add("hidden");fadeOutWinnerAudio()}
+const closeVictoryAndViewBoard=()=>closeVictoryModal();
+
+initTouchTapSupport();
+window.addEventListener("DOMContentLoaded",loadState);
+</script>
 </body>
 </html>
